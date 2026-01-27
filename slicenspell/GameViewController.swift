@@ -1,13 +1,5 @@
-//
-//  GameViewController.swift
-//  slicenspell
-//
-//  Created by Ali Aljahmi on 1/27/26.
-//
-
 import UIKit
 import SpriteKit
-import GameplayKit
 
 class GameViewController: UIViewController {
 
@@ -29,6 +21,10 @@ class GameViewController: UIViewController {
             view.showsFPS = true
             view.showsNodeCount = true
         }
+    }
+
+    override var shouldAutorotate: Bool {
+        return true
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
