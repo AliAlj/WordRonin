@@ -43,9 +43,6 @@ final class GameScene: SKScene {
         didSet { gameScore.text = "Score: \(score)" }
     }
 
-    private var livesImages = [SKSpriteNode]()
-    private var lives = 3
-
     private var activeSliceBG: SKShapeNode!
     private var activeSliceFG: SKShapeNode!
     private var activeSlicePoints = [CGPoint]()
@@ -62,6 +59,9 @@ final class GameScene: SKScene {
 
     private var gameEnded = false
     private var gameOverOverlay: SKNode?
+
+    private var gameStarted = false
+    private var startOverlay: SKNode?
 
     private var safeInsets: UIEdgeInsets = .zero
     private func effectiveRightPadding() -> CGFloat { max(24, safeInsets.right + 24) }
@@ -98,7 +98,13 @@ final class GameScene: SKScene {
 
         perRoundFound = Array(repeating: [], count: roundWords.count)
 
-        startNewRound()
+        gameStarted = false
+        roundActive = false
+        timeRemaining = 0
+        updateTimerLabel()
+        currentWordLabel?.text = ""
+
+        showStartOverlay()
     }
 
     override func didChangeSize(_ oldSize: CGSize) {
@@ -190,14 +196,94 @@ final class GameScene: SKScene {
         label.userData = dict
     }
 
+    private func showStartOverlay() {
+        startOverlay?.removeFromParent()
+
+        let overlay = SKNode()
+        overlay.zPosition = 999
+        addChild(overlay)
+        startOverlay = overlay
+
+        let dim = SKSpriteNode(color: UIColor(white: 0, alpha: 0.70), size: size)
+        dim.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        overlay.addChild(dim)
+
+        let title = SKLabelNode(fontNamed: "Chalkduster")
+        title.text = "Letter Slice"
+        title.fontSize = 64
+        title.fontColor = .white
+        title.position = CGPoint(x: size.width / 2, y: size.height * 0.70)
+        overlay.addChild(title)
+
+        let subtitle = SKLabelNode(fontNamed: "Chalkduster")
+        subtitle.text = "Swipe letters to make words"
+        subtitle.fontSize = 22
+        subtitle.fontColor = UIColor(white: 1, alpha: 0.85)
+        subtitle.position = CGPoint(x: size.width / 2, y: size.height * 0.63)
+        overlay.addChild(subtitle)
+
+        let start = SKLabelNode(fontNamed: "Chalkduster")
+        start.text = "Start Game"
+        start.fontSize = 38
+        start.fontColor = .white
+        start.position = CGPoint(x: size.width / 2, y: size.height * 0.42)
+        start.name = "btn_start_game"
+        overlay.addChild(start)
+
+        let hint = SKLabelNode(fontNamed: "Chalkduster")
+        hint.text = "Tap Start to begin"
+        hint.fontSize = 18
+        hint.fontColor = UIColor(white: 1, alpha: 0.75)
+        hint.position = CGPoint(x: size.width / 2, y: size.height * 0.37)
+        overlay.addChild(hint)
+    }
+
+    private func beginGame() {
+        startOverlay?.removeFromParent()
+        startOverlay = nil
+
+        gameStarted = true
+        gameEnded = false
+
+        score = 0
+        roundIndex = 0
+
+        foundWords.removeAll()
+        possibleWords.removeAll()
+        selectedIndices.removeAll()
+        jumbledLetters.removeAll()
+
+        for node in letterNodes { node.removeFromParent() }
+        letterNodes.removeAll()
+
+        currentWordLabel?.text = ""
+        timeRemaining = 0
+        updateTimerLabel()
+
+        activeSlicePoints.removeAll(keepingCapacity: true)
+        activeSliceBG.path = nil
+        activeSliceFG.path = nil
+        activeSliceBG.alpha = 0
+        activeSliceFG.alpha = 0
+
+        startNewRound()
+    }
+
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
 
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
+        let tappedNodes = nodes(at: location)
+
+        if !gameStarted {
+            if tappedNodes.contains(where: { $0.name == "btn_start_game" || $0.parent?.name == "btn_start_game" }) {
+                beginGame()
+            }
+            return
+        }
 
         if gameEnded {
-            let tappedNodes = nodes(at: location)
             if tappedNodes.contains(where: { $0.name == "btn_play_again" || $0.parent?.name == "btn_play_again" }) {
                 restartGame()
             }
@@ -212,7 +298,7 @@ final class GameScene: SKScene {
         clearSelectionUIAndState()
         activeSlicePoints.removeAll(keepingCapacity: true)
 
-        for node in nodes(at: location) {
+        for node in tappedNodes {
             if let nodeName = node.name,
                nodeName.hasPrefix("letter_"),
                let indexStr = nodeName.split(separator: "_").last,
@@ -347,7 +433,7 @@ final class GameScene: SKScene {
 
         endGame(triggeredByBomb: false)
     }
-    
+
     private func pointsForWord(length: Int) -> Int {
         let perLetter = 50
         let base = perLetter * length
@@ -360,13 +446,12 @@ final class GameScene: SKScene {
             bonus = 50
         case 5:
             bonus = 150
-        default: // 6+
+        default:
             bonus = 300
         }
 
         return base + bonus
     }
-
 
     private func validate(candidate: String, usedIndices: [Int]) {
         let upper = candidate.uppercased()
@@ -568,9 +653,9 @@ final class GameScene: SKScene {
         activeSliceFG.alpha = 0
 
         roundActive = true
-        timeRemaining = 30
+        timeRemaining = 60
         updateTimerLabel()
-        startRoundTimer(seconds: 30)
+        startRoundTimer(seconds: 60)
     }
 
     private func randomNonOverlappingPositions(count: Int, in rect: CGRect, minDistance: CGFloat) -> [CGPoint] {
@@ -730,6 +815,7 @@ final class GameScene: SKScene {
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
 
         gameEnded = false
+        gameStarted = false
 
         score = 0
         roundIndex = 0
@@ -752,7 +838,7 @@ final class GameScene: SKScene {
         activeSliceBG.alpha = 0
         activeSliceFG.alpha = 0
 
-        startNewRound()
+        showStartOverlay()
     }
 
     private func redrawActiveSlice() {
