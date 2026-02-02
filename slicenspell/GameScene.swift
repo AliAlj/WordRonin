@@ -351,6 +351,7 @@ final class GameScene: SKScene {
         activeSliceFG.path = nil
 
         guard roundActive else { return }
+        guard !selectedIndices.isEmpty else { return }
 
         let candidate = buildSelectedWord()
         let usedIndices = selectedIndices
