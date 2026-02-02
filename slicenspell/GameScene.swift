@@ -1,3 +1,4 @@
+// GameScene.swift
 import AVFoundation
 import SpriteKit
 import SwiftUI
@@ -11,6 +12,9 @@ enum SequenceType: CaseIterable {
 }
 
 final class GameScene: SKScene {
+
+    private let roundDurationSeconds = 60
+    private let bambooImageName = "bamboo_slice" // add this to Assets.xcassets
 
     private var jumbledLetters: [Character] = []
     private var letterNodes: [SKSpriteNode] = []
@@ -90,8 +94,9 @@ final class GameScene: SKScene {
         createCurrentWordLabel()
         createTimerLabel()
 
+        // (Unused in this word-mode, but leaving it here is fine)
         sequence = [.oneNoBomb, .oneNoBomb, .twoWithOneBomb, .twoWithOneBomb, .three, .one, .chain]
-        for _ in 0 ... 1000 {
+        for _ in 0...1000 {
             let nextSequence = SequenceType.allCases.randomElement()!
             sequence.append(nextSequence)
         }
@@ -370,7 +375,7 @@ final class GameScene: SKScene {
 
         let scaleUp = SKAction.scale(to: 1.2, duration: 0.08)
         let colorize = SKAction.run {
-            (node.children.first as? SKLabelNode)?.fontColor = .yellow
+            (node.childNode(withName: "letterLabel") as? SKLabelNode)?.fontColor = .yellow
         }
         node.run(scaleUp)
         node.run(colorize)
@@ -382,7 +387,7 @@ final class GameScene: SKScene {
 
         let scaleDown = SKAction.scale(to: 1.0, duration: 0.08)
         let colorize = SKAction.run {
-            (node.children.first as? SKLabelNode)?.fontColor = .white
+            (node.childNode(withName: "letterLabel") as? SKLabelNode)?.fontColor = .white
         }
         node.run(scaleDown)
         node.run(colorize)
@@ -440,14 +445,10 @@ final class GameScene: SKScene {
 
         let bonus: Int
         switch length {
-        case 0...3:
-            bonus = 0
-        case 4:
-            bonus = 50
-        case 5:
-            bonus = 150
-        default:
-            bonus = 300
+        case 0...3: bonus = 0
+        case 4: bonus = 50
+        case 5: bonus = 150
+        default: bonus = 300
         }
 
         return base + bonus
@@ -500,7 +501,7 @@ final class GameScene: SKScene {
             guard idx >= 0 && idx < letterNodes.count else { continue }
             let node = letterNodes[idx]
             node.run(pulse)
-            (node.children.first as? SKLabelNode)?.fontColor = .green
+            (node.childNode(withName: "letterLabel") as? SKLabelNode)?.fontColor = .green
         }
 
         run(SKAction.wait(forDuration: 0.15)) { [weak self] in
@@ -522,7 +523,7 @@ final class GameScene: SKScene {
             guard idx >= 0 && idx < letterNodes.count else { continue }
             let node = letterNodes[idx]
             node.run(shake)
-            (node.children.first as? SKLabelNode)?.fontColor = alreadyFound ? .orange : .red
+            (node.childNode(withName: "letterLabel") as? SKLabelNode)?.fontColor = alreadyFound ? .orange : .red
         }
 
         run(SKAction.wait(forDuration: 0.2)) { [weak self] in
@@ -587,7 +588,7 @@ final class GameScene: SKScene {
 
         possibleWords = generatePossibleWords(from: jumbledLetters)
 
-        let letterSize = CGSize(width: 64, height: 64)
+        let letterSize = CGSize(width: 72, height: 72)
 
         let leftInset: CGFloat = max(30, safeInsets.left + 24)
         let rightInset: CGFloat = max(30, safeInsets.right + 24)
@@ -601,7 +602,7 @@ final class GameScene: SKScene {
             height: size.height - topInset - bottomInset - letterSize.height * 1.2
         )
 
-        let minCenterDistance: CGFloat = 92
+        let minCenterDistance: CGFloat = 150
         let targets = randomNonOverlappingPositions(
             count: jumbledLetters.count,
             in: playableRect,
@@ -609,20 +610,28 @@ final class GameScene: SKScene {
         )
 
         for (index, letter) in jumbledLetters.enumerated() {
-            let letterNode = SKSpriteNode(color: .clear, size: letterSize)
+            let letterNode = SKSpriteNode(color: .clear, size: CGSize(width: 118, height: 92))
             letterNode.name = "letter_\(index)"
             letterNode.zPosition = 10
 
             let target = targets[index]
-            letterNode.position = CGPoint(x: target.x, y: -80)
+            letterNode.position = CGPoint(x: target.x, y: -90)
+
+            let bamboo = SKSpriteNode(imageNamed: bambooImageName)
+            bamboo.size = CGSize(width: 120, height: 120)
+            bamboo.position = .zero
+            bamboo.zPosition = -1
+            bamboo.alpha = 0.98
+            letterNode.addChild(bamboo)
 
             let label = SKLabelNode(fontNamed: "Chalkduster")
+            label.name = "letterLabel"
             label.text = String(letter)
-            label.fontSize = 44
+            label.fontSize = 54
             label.fontColor = .white
             label.verticalAlignmentMode = .center
             label.horizontalAlignmentMode = .center
-            label.position = .zero
+            label.position = CGPoint(x: -14, y: -4)
             letterNode.addChild(label)
 
             letterNode.zRotation = 0
@@ -653,9 +662,9 @@ final class GameScene: SKScene {
         activeSliceFG.alpha = 0
 
         roundActive = true
-        timeRemaining = 60
+        timeRemaining = roundDurationSeconds
         updateTimerLabel()
-        startRoundTimer(seconds: 60)
+        startRoundTimer(seconds: roundDurationSeconds)
     }
 
     private func randomNonOverlappingPositions(count: Int, in rect: CGRect, minDistance: CGFloat) -> [CGPoint] {
@@ -686,9 +695,7 @@ final class GameScene: SKScene {
                 }
             }
 
-            if ok {
-                points.append(p)
-            }
+            if ok { points.append(p) }
         }
 
         if points.count < count {
@@ -929,8 +936,7 @@ final class GameScene: SKScene {
         activeEnemies.append(enemy)
     }
 
-    override func update(_ currentTime: TimeInterval) {
-    }
+    override func update(_ currentTime: TimeInterval) { }
 }
 
 #Preview("GameScene Preview") {
