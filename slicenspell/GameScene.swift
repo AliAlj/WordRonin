@@ -940,10 +940,10 @@ final class GameScene: SKScene {
     override func update(_ currentTime: TimeInterval) { }
 }
 
-#Preview("GameScene Preview") {
+#Preview("GameScene – iPad Landscape", traits: .landscapeLeft) {
     SpriteView(scene: {
         let scene = GameScene(size: CGSize(width: 1024, height: 768))
-        scene.scaleMode = .resizeFill
+        scene.scaleMode = .aspectFill
         return scene
     }())
     .ignoresSafeArea()
