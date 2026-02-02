@@ -1,4 +1,3 @@
-// GameScene.swift
 import AVFoundation
 import SpriteKit
 import SwiftUI
@@ -94,13 +93,6 @@ final class GameScene: SKScene {
         createCurrentWordLabel()
         createTimerLabel()
 
-        // (Unused in this word-mode, but leaving it here is fine)
-        sequence = [.oneNoBomb, .oneNoBomb, .twoWithOneBomb, .twoWithOneBomb, .three, .one, .chain]
-        for _ in 0...1000 {
-            let nextSequence = SequenceType.allCases.randomElement()!
-            sequence.append(nextSequence)
-        }
-
         perRoundFound = Array(repeating: [], count: roundWords.count)
 
         gameStarted = false
@@ -117,6 +109,14 @@ final class GameScene: SKScene {
 
         if let bg = childNode(withName: "//sliceBackground") as? SKSpriteNode {
             bg.position = CGPoint(x: size.width / 2, y: size.height / 2)
+
+            if let tex = bg.texture {
+                let xScale = size.width / tex.size().width
+                let yScale = size.height / tex.size().height
+                let scale = max(xScale, yScale)   // aspect fill
+                bg.xScale = scale
+                bg.yScale = scale
+            }
         }
 
         let topPad = effectiveTopPadding()
