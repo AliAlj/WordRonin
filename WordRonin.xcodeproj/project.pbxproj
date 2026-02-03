@@ -35,14 +35,14 @@
 			path = WordRonin;
 			sourceTree = "<group>";
 		};
-		D61FA3062F28894C00D21213 /* slicenspellTests */ = {
+		D61FA3062F28894C00D21213 /* WordRoninTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = slicenspellTests;
+			path = WordRoninTests;
 			sourceTree = "<group>";
 		};
-		D61FA3102F28894C00D21213 /* slicenspellUITests */ = {
+		D61FA3102F28894C00D21213 /* WordRoninUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = slicenspellUITests;
+			path = WordRoninUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -76,8 +76,8 @@
 			isa = PBXGroup;
 			children = (
 				D61FA2EC2F28894B00D21213 /* WordRonin */,
-				D61FA3062F28894C00D21213 /* slicenspellTests */,
-				D61FA3102F28894C00D21213 /* slicenspellUITests */,
+				D61FA3062F28894C00D21213 /* WordRoninTests */,
+				D61FA3102F28894C00D21213 /* WordRoninUITests */,
 				D61FA2EB2F28894B00D21213 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -131,7 +131,7 @@
 				D61FA3052F28894C00D21213 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				D61FA3062F28894C00D21213 /* slicenspellTests */,
+				D61FA3062F28894C00D21213 /* WordRoninTests */,
 			);
 			name = slicenspellTests;
 			packageProductDependencies = (
@@ -154,7 +154,7 @@
 				D61FA30F2F28894C00D21213 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				D61FA3102F28894C00D21213 /* slicenspellUITests */,
+				D61FA3102F28894C00D21213 /* WordRoninUITests */,
 			);
 			name = slicenspellUITests;
 			packageProductDependencies = (
@@ -186,7 +186,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D61FA2E52F28894B00D21213 /* Build configuration list for PBXProject "slicenspell" */;
+			buildConfigurationList = D61FA2E52F28894B00D21213 /* Build configuration list for PBXProject "WordRonin" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -539,7 +539,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D61FA2E52F28894B00D21213 /* Build configuration list for PBXProject "slicenspell" */ = {
+		D61FA2E52F28894B00D21213 /* Build configuration list for PBXProject "WordRonin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D61FA3152F28894C00D21213 /* Debug */,

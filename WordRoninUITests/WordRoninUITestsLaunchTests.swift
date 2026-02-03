@@ -1,13 +1,6 @@
-//
-//  slicenspellUITestsLaunchTests.swift
-//  slicenspellUITests
-//
-//  Created by Ali Aljahmi on 1/27/26.
-//
-
 import XCTest
 
-final class slicenspellUITestsLaunchTests: XCTestCase {
+final class WordRoninUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

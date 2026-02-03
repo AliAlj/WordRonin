@@ -13,7 +13,7 @@ enum SequenceType: CaseIterable {
 final class GameScene: SKScene {
 
     private let roundDurationSeconds = 60
-    private let bambooImageName = "bamboo_slice" // add this to Assets.xcassets
+    private let bambooImageName = "bamboo_slice"
 
     private var jumbledLetters: [Character] = []
     private var letterNodes: [SKSpriteNode] = []
@@ -113,7 +113,7 @@ final class GameScene: SKScene {
             if let tex = bg.texture {
                 let xScale = size.width / tex.size().width
                 let yScale = size.height / tex.size().height
-                let scale = max(xScale, yScale)   // aspect fill
+                let scale = max(xScale, yScale)
                 bg.xScale = scale
                 bg.yScale = scale
             }
@@ -214,7 +214,7 @@ final class GameScene: SKScene {
         overlay.addChild(dim)
 
         let title = SKLabelNode(fontNamed: "Chalkduster")
-        title.text = "Letter Slice"
+        title.text = "Word Ronin"
         title.fontSize = 64
         title.fontColor = .white
         title.position = CGPoint(x: size.width / 2, y: size.height * 0.70)
