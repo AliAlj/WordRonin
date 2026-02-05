@@ -1,3 +1,5 @@
+// GameScene.swift
+
 import AVFoundation
 import SpriteKit
 import SwiftUI
@@ -93,6 +95,12 @@ final class GameScene: SKScene {
         createCurrentWordLabel()
         createTimerLabel()
 
+        sequence = [.oneNoBomb, .oneNoBomb, .twoWithOneBomb, .twoWithOneBomb, .three, .one, .chain]
+        for _ in 0 ... 1000 {
+            let nextSequence = SequenceType.allCases.randomElement()!
+            sequence.append(nextSequence)
+        }
+
         perRoundFound = Array(repeating: [], count: roundWords.count)
 
         gameStarted = false
@@ -119,6 +127,18 @@ final class GameScene: SKScene {
             }
         }
 
+        if let startOverlay = startOverlay {
+            startOverlay.removeFromParent()
+            self.startOverlay = nil
+            showStartOverlay()
+        }
+
+        if let gameOverOverlay = gameOverOverlay {
+            gameOverOverlay.removeFromParent()
+            self.gameOverOverlay = nil
+            showGameOverOverlay()
+        }
+
         let topPad = effectiveTopPadding()
         let rightPad = effectiveRightPadding()
 
@@ -137,7 +157,7 @@ final class GameScene: SKScene {
         gameScore.text = "Score: 0"
         gameScore.horizontalAlignmentMode = .left
         gameScore.fontSize = 48
-        gameScore.position = CGPoint(x: 8, y: 8)
+        gameScore.position = CGPoint(x: 16, y: 16)
         gameScore.zPosition = 100
         addChild(gameScore)
     }
@@ -422,7 +442,7 @@ final class GameScene: SKScene {
     }
 
     private func updateTimerLabel() {
-        timerLabel?.text = "⏱️ \(max(0, timeRemaining))"
+        timerLabel?.text = "Time: \(max(0, timeRemaining))"
         if let shadow = timerLabel?.userData?["shadow"] as? SKLabelNode {
             shadow.text = timerLabel?.text
         }
@@ -636,6 +656,7 @@ final class GameScene: SKScene {
             letterNode.addChild(label)
 
             letterNode.zRotation = 0
+
             letterNode.physicsBody = SKPhysicsBody(rectangleOf: letterNode.size)
             letterNode.physicsBody?.collisionBitMask = 0
             letterNode.physicsBody?.linearDamping = 0

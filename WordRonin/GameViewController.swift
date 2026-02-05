@@ -1,3 +1,5 @@
+// GameViewController.swift
+
 import UIKit
 import SpriteKit
 
@@ -28,6 +30,16 @@ final class GameViewController: UIViewController {
             scene = s
         } else {
             scene?.size = skView.bounds.size
+        }
+    }
+
+    override var shouldAutorotate: Bool { true }
+
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            return .allButUpsideDown
+        } else {
+            return .all
         }
     }
 
