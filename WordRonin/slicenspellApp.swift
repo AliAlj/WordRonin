@@ -1,8 +1,7 @@
-// WordRoninApp.swift
 import SwiftUI
 
 @main
-struct WordRoninApp: App {
+struct slicenspellApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {

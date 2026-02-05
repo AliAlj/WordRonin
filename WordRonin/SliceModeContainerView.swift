@@ -1,9 +1,7 @@
 import SwiftUI
 import SpriteKit
-
 struct SliceModeContainerView: View {
     let onExit: () -> Void
-
     var body: some View {
         ZStack(alignment: .topLeading) {
             SpriteView(scene: {
@@ -12,7 +10,6 @@ struct SliceModeContainerView: View {
                 return scene
             }())
             .ignoresSafeArea()
-
             Button {
                 onExit()
             } label: {
@@ -29,7 +26,7 @@ struct SliceModeContainerView: View {
         }
     }
 }
-
 #Preview("Slice Mode") {
     SliceModeContainerView(onExit: {})
 }
+

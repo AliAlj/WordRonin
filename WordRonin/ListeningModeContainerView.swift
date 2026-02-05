@@ -1,12 +1,9 @@
 import SwiftUI
-
 struct ListeningModeContainerView: View {
     let onExit: () -> Void
-
     var body: some View {
         ZStack(alignment: .topLeading) {
             ListeningModeView()
-
             Button {
                 onExit()
             } label: {

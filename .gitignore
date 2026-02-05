@@ -1,3 +1,11 @@
+<<<<<<< HEAD
 .DS_Store
 .DS_Store
 **/.DS_Store
+=======
+
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+.DS_Store
+>>>>>>> ali-iteration
