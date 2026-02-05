@@ -21,12 +21,29 @@
 			remoteGlobalIDString = D61FA2E92F28894B00D21213;
 			remoteInfo = slicenspell;
 		};
+		D6C1FEA62F3292280023718F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D61FA2E22F28894B00D21213 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D6C1FE8E2F3292270023718F;
+			remoteInfo = WordRonin;
+		};
+		D6C1FEB02F3292280023718F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D61FA2E22F28894B00D21213 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D6C1FE8E2F3292270023718F;
+			remoteInfo = WordRonin;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		D61FA2EA2F28894B00D21213 /* slicenspell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = slicenspell.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D61FA3032F28894C00D21213 /* slicenspellTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = slicenspellTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D61FA30D2F28894C00D21213 /* slicenspellUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = slicenspellUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D6C1FE8F2F3292270023718F /* WordRonin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WordRonin.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D6C1FEA52F3292270023718F /* WordRoninTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WordRoninTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D6C1FEAF2F3292280023718F /* WordRoninUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WordRoninUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -35,14 +52,14 @@
 			path = WordRonin;
 			sourceTree = "<group>";
 		};
-		D61FA3062F28894C00D21213 /* slicenspellTests */ = {
+		D61FA3062F28894C00D21213 /* WordRoninTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = slicenspellTests;
+			path = WordRoninTests;
 			sourceTree = "<group>";
 		};
-		D61FA3102F28894C00D21213 /* slicenspellUITests */ = {
+		D61FA3102F28894C00D21213 /* WordRoninUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = slicenspellUITests;
+			path = WordRoninUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -69,6 +86,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D6C1FE8C2F3292270023718F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D6C1FEA22F3292270023718F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D6C1FEAC2F3292280023718F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -76,8 +114,8 @@
 			isa = PBXGroup;
 			children = (
 				D61FA2EC2F28894B00D21213 /* WordRonin */,
-				D61FA3062F28894C00D21213 /* slicenspellTests */,
-				D61FA3102F28894C00D21213 /* slicenspellUITests */,
+				D61FA3062F28894C00D21213 /* WordRoninTests */,
+				D61FA3102F28894C00D21213 /* WordRoninUITests */,
 				D61FA2EB2F28894B00D21213 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,6 +126,9 @@
 				D61FA2EA2F28894B00D21213 /* slicenspell.app */,
 				D61FA3032F28894C00D21213 /* slicenspellTests.xctest */,
 				D61FA30D2F28894C00D21213 /* slicenspellUITests.xctest */,
+				D6C1FE8F2F3292270023718F /* WordRonin.app */,
+				D6C1FEA52F3292270023718F /* WordRoninTests.xctest */,
+				D6C1FEAF2F3292280023718F /* WordRoninUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -131,7 +172,7 @@
 				D61FA3052F28894C00D21213 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				D61FA3062F28894C00D21213 /* slicenspellTests */,
+				D61FA3062F28894C00D21213 /* WordRoninTests */,
 			);
 			name = slicenspellTests;
 			packageProductDependencies = (
@@ -154,13 +195,72 @@
 				D61FA30F2F28894C00D21213 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				D61FA3102F28894C00D21213 /* slicenspellUITests */,
+				D61FA3102F28894C00D21213 /* WordRoninUITests */,
 			);
 			name = slicenspellUITests;
 			packageProductDependencies = (
 			);
 			productName = slicenspellUITests;
 			productReference = D61FA30D2F28894C00D21213 /* slicenspellUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		D6C1FE8E2F3292270023718F /* WordRonin */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D6C1FEB72F3292280023718F /* Build configuration list for PBXNativeTarget "WordRonin" */;
+			buildPhases = (
+				D6C1FE8B2F3292270023718F /* Sources */,
+				D6C1FE8C2F3292270023718F /* Frameworks */,
+				D6C1FE8D2F3292270023718F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WordRonin;
+			packageProductDependencies = (
+			);
+			productName = WordRonin;
+			productReference = D6C1FE8F2F3292270023718F /* WordRonin.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D6C1FEA42F3292270023718F /* WordRoninTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D6C1FEBA2F3292280023718F /* Build configuration list for PBXNativeTarget "WordRoninTests" */;
+			buildPhases = (
+				D6C1FEA12F3292270023718F /* Sources */,
+				D6C1FEA22F3292270023718F /* Frameworks */,
+				D6C1FEA32F3292270023718F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D6C1FEA72F3292280023718F /* PBXTargetDependency */,
+			);
+			name = WordRoninTests;
+			packageProductDependencies = (
+			);
+			productName = WordRoninTests;
+			productReference = D6C1FEA52F3292270023718F /* WordRoninTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D6C1FEAE2F3292280023718F /* WordRoninUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D6C1FEBD2F3292280023718F /* Build configuration list for PBXNativeTarget "WordRoninUITests" */;
+			buildPhases = (
+				D6C1FEAB2F3292280023718F /* Sources */,
+				D6C1FEAC2F3292280023718F /* Frameworks */,
+				D6C1FEAD2F3292280023718F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D6C1FEB12F3292280023718F /* PBXTargetDependency */,
+			);
+			name = WordRoninUITests;
+			packageProductDependencies = (
+			);
+			productName = WordRoninUITests;
+			productReference = D6C1FEAF2F3292280023718F /* WordRoninUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -184,9 +284,20 @@
 						CreatedOnToolsVersion = 26.0.1;
 						TestTargetID = D61FA2E92F28894B00D21213;
 					};
+					D6C1FE8E2F3292270023718F = {
+						CreatedOnToolsVersion = 26.0.1;
+					};
+					D6C1FEA42F3292270023718F = {
+						CreatedOnToolsVersion = 26.0.1;
+						TestTargetID = D6C1FE8E2F3292270023718F;
+					};
+					D6C1FEAE2F3292280023718F = {
+						CreatedOnToolsVersion = 26.0.1;
+						TestTargetID = D6C1FE8E2F3292270023718F;
+					};
 				};
 			};
-			buildConfigurationList = D61FA2E52F28894B00D21213 /* Build configuration list for PBXProject "slicenspell" */;
+			buildConfigurationList = D61FA2E52F28894B00D21213 /* Build configuration list for PBXProject "WordRonin" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -203,6 +314,9 @@
 				D61FA2E92F28894B00D21213 /* slicenspell */,
 				D61FA3022F28894C00D21213 /* slicenspellTests */,
 				D61FA30C2F28894C00D21213 /* slicenspellUITests */,
+				D6C1FE8E2F3292270023718F /* WordRonin */,
+				D6C1FEA42F3292270023718F /* WordRoninTests */,
+				D6C1FEAE2F3292280023718F /* WordRoninUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -223,6 +337,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D61FA30B2F28894C00D21213 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D6C1FE8D2F3292270023718F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D6C1FEA32F3292270023718F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D6C1FEAD2F3292280023718F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -253,6 +388,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D6C1FE8B2F3292270023718F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D6C1FEA12F3292270023718F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D6C1FEAB2F3292280023718F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -265,6 +421,16 @@
 			isa = PBXTargetDependency;
 			target = D61FA2E92F28894B00D21213 /* slicenspell */;
 			targetProxy = D61FA30E2F28894C00D21213 /* PBXContainerItemProxy */;
+		};
+		D6C1FEA72F3292280023718F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D6C1FE8E2F3292270023718F /* WordRonin */;
+			targetProxy = D6C1FEA62F3292280023718F /* PBXContainerItemProxy */;
+		};
+		D6C1FEB12F3292280023718F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D6C1FE8E2F3292270023718F /* WordRonin */;
+			targetProxy = D6C1FEB02F3292280023718F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -399,17 +565,21 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = JPWVN6YN3B;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = WordRonin;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.word-games";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = alialjahmi.slicenspell;
+				PRODUCT_BUNDLE_IDENTIFIER = alialjahmi.WordRonin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -430,17 +600,21 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = JPWVN6YN3B;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = WordRonin;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.word-games";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = alialjahmi.slicenspell;
+				PRODUCT_BUNDLE_IDENTIFIER = alialjahmi.WordRonin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -536,10 +710,164 @@
 			};
 			name = Release;
 		};
+		D6C1FEB82F3292280023718F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = JPWVN6YN3B;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = WordRonin;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.word-games";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UIStatusBarHidden = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = alialjahmi.WordRonin;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D6C1FEB92F3292280023718F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = JPWVN6YN3B;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = WordRonin;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.word-games";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UIStatusBarHidden = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = alialjahmi.WordRonin;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D6C1FEBB2F3292280023718F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = JPWVN6YN3B;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = alialjahmi.WordRoninTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WordRonin.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/WordRonin";
+			};
+			name = Debug;
+		};
+		D6C1FEBC2F3292280023718F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = JPWVN6YN3B;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = alialjahmi.WordRoninTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WordRonin.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/WordRonin";
+			};
+			name = Release;
+		};
+		D6C1FEBE2F3292280023718F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = JPWVN6YN3B;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = alialjahmi.WordRoninUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = WordRonin;
+			};
+			name = Debug;
+		};
+		D6C1FEBF2F3292280023718F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = JPWVN6YN3B;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = alialjahmi.WordRoninUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = WordRonin;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D61FA2E52F28894B00D21213 /* Build configuration list for PBXProject "slicenspell" */ = {
+		D61FA2E52F28894B00D21213 /* Build configuration list for PBXProject "WordRonin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D61FA3152F28894C00D21213 /* Debug */,
@@ -571,6 +899,33 @@
 			buildConfigurations = (
 				D61FA31E2F28894C00D21213 /* Debug */,
 				D61FA31F2F28894C00D21213 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D6C1FEB72F3292280023718F /* Build configuration list for PBXNativeTarget "WordRonin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D6C1FEB82F3292280023718F /* Debug */,
+				D6C1FEB92F3292280023718F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D6C1FEBA2F3292280023718F /* Build configuration list for PBXNativeTarget "WordRoninTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D6C1FEBB2F3292280023718F /* Debug */,
+				D6C1FEBC2F3292280023718F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D6C1FEBD2F3292280023718F /* Build configuration list for PBXNativeTarget "WordRoninUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D6C1FEBE2F3292280023718F /* Debug */,
+				D6C1FEBF2F3292280023718F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
