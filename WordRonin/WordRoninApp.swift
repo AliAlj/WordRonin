@@ -1,8 +1,12 @@
-//
-//  File.swift
-//  WordRonin
-//
-//  Created by Ali Aljahmi on 2/4/26.
-//
+import SwiftUI
 
-import Foundation
+@main
+struct WordRoninApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
+    var body: some Scene {
+        WindowGroup {
+            RootModeView()
+        }
+    }
+}
