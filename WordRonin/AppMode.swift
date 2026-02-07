@@ -1,3 +1,4 @@
+//AppMode
 import Foundation
 
 enum AppMode: String, CaseIterable, Identifiable {

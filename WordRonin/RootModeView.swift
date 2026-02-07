@@ -1,3 +1,4 @@
+//RootModeView
 import SwiftUI
 struct RootModeView: View {
     @State private var selectedMode: AppMode? = nil
