@@ -17,7 +17,10 @@ final class GameScene: SKScene {
     private let roundDurationSeconds = 60
     private let bambooImageName = "bamboo_slice"
 
-    private var jumbledLetters: [Character] = []
+    // One random base word per game start
+    private let startWords: [String] = ["ORANGE", "PLANET", "STREAM", "CAMERA", "POCKET", "APRICOT"]
+
+    private var baseLetters: [Character] = []
     private var letterNodes: [SKSpriteNode] = []
     private var selectedIndices: [Int] = []
 
@@ -31,18 +34,6 @@ final class GameScene: SKScene {
     private var timerLabel: SKLabelNode?
     private var currentWordLabel: SKLabelNode?
 
-    private let roundWords: [String] = ["ORANGE", "PLANET", "STREAM", "CAMERA", "POCKET"]
-    private var roundIndex: Int = 0
-    private var perRoundFound: [[String]] = []
-
-    private let demoDictionary: Set<String> = [
-        "ORANGE", "ANGER", "ARGON", "ORGAN", "GROAN", "RANGE", "RANG", "RAGE", "OGRE", "ERGO", "AERO", "AEON", "GORE", "GEAR", "GONE", "EARN", "NEAR", "ORE", "ROE", "OAR", "AGO", "NAG", "NOR", "NOG", "EON", "EGO", "RAN", "RAG", "AGE", "EAR", "ERA", "ARE", "ONE",
-        "PLANET", "PLANE", "PANEL", "LATE", "LEAN", "NEAT", "PEN", "NET", "TEN",
-        "STREAM", "TEAMS", "TAMES", "STARE", "SEAM", "SAME", "TEAM", "MATE", "MEAT", "RATE",
-        "CAMERA", "CREAM", "AMER", "ACRE", "CARE", "RACE", "MARE", "AREA",
-        "POCKET", "POKE", "POET", "COKE", "TOKE", "POCKETS"
-    ]
-
     private var gameScore: SKLabelNode!
     private var score = 0 {
         didSet { gameScore.text = "Score: \(score)" }
@@ -51,16 +42,6 @@ final class GameScene: SKScene {
     private var activeSliceBG: SKShapeNode!
     private var activeSliceFG: SKShapeNode!
     private var activeSlicePoints = [CGPoint]()
-
-    private var activeEnemies = [SKSpriteNode]()
-    private var isSwooshSoundActive = false
-    private var bombSoundEffect: AVAudioPlayer?
-
-    private var popupTime = 0.9
-    private var sequence: [SequenceType]!
-    private var sequencePosition = 0
-    private var chainDelay = 3.0
-    private var nextSequenceQueued = true
 
     private var gameEnded = false
     private var gameOverOverlay: SKNode?
@@ -73,6 +54,43 @@ final class GameScene: SKScene {
     private var safeInsets: UIEdgeInsets = .zero
     private func effectiveRightPadding() -> CGFloat { max(24, safeInsets.right + 24) }
     private func effectiveTopPadding() -> CGFloat { max(32, safeInsets.top + 32) }
+
+    private let demoDictionary: Set<String> = [
+        // ORANGE
+        "ORANGE",
+        "ANGER","ARGON","ORGAN","GROAN","RANGE",
+        "RANG","RAGE","OGRE","ERGO","AERO","AEON","GORE","GEAR","GONE","EARN","NEAR",
+        "ORE","ROE","OAR","AGO","NAG","NOR","EON","EGO","RAN","RAG","AGE","EAR","ERA","ARE","ONE",
+
+        // PLANET
+        "PLANET",
+        "PLANE","PANEL","PETAL","PLATE","LEAPT","PALET","PENAL",
+        "PLEA","PEAL","PALE","LEAP","PELT","LENT","LATE","LEAN","NEAT","TAPE","PATE","PEAT",
+        "PAN","PEN","NET","TEN","ANT","TAN","NAP","PAL","LAT","LET","ALE","LEA","APE","EAT","TEA","ATE","TAP","PAT","PET",
+
+        // STREAM
+        "STREAM","MASTER","TAMERS",
+        "SMEAR","STARE","TEARS","RATES","TAMES","TEAMS",
+        "SAME","SEAM","TEAM","MATE","MEAT","TAME","EAST","SEAT","RATE","STAR","EARS","TEAR",
+        "ARM","RAM","TAR","RAT","ART","MET","SET","SEA","EAT","ATE","TEA",
+
+        // CAMERA
+        "CAMERA","CREAM",
+        "ACRE","CARE","RACE","MARE","AREA",
+        "ARC","CAR","ARM","RAM","ERA","ARE",
+
+        // POCKET
+        "POCKET",
+        "POKE","POET","COKE","TOKE","POCK","TOCK","PECK","COPE","COTE",
+        "PET","POT","TOP","COP","TOE","ECO",
+
+        // APRICOT
+        "APRICOT",
+        "TOPIC","PATIO","OPTIC","CAPRI",
+        "PAIR","TRAP","PORT","PART","TARP",
+        "RIP","TIP","PIT","ART","RAT","TAR","TAP","PAT","COP","CAP","CAR","ARC","RAP","PAR","PRO"
+    ]
+
 
     override func didMove(to view: SKView) {
         if #available(iOS 11.0, *) {
@@ -105,16 +123,9 @@ final class GameScene: SKScene {
         createCurrentWordLabel()
         createTimerLabel()
 
-        sequence = [.oneNoBomb, .oneNoBomb, .twoWithOneBomb, .twoWithOneBomb, .three, .one, .chain]
-        for _ in 0 ... 1000 {
-            let nextSequence = SequenceType.allCases.randomElement()!
-            sequence.append(nextSequence)
-        }
-
-        perRoundFound = Array(repeating: [], count: roundWords.count)
-
         gameStarted = false
         roundActive = false
+        gameEnded = false
         timeRemaining = 0
         updateTimerLabel()
         currentWordLabel?.text = ""
@@ -320,6 +331,7 @@ final class GameScene: SKScene {
         subtitle.position = CGPoint(x: size.width / 2, y: size.height * 0.69)
         overlay.addChild(subtitle)
 
+        // Demo letters ONLY (not the actual round word)
         let word = Array("ORANGE")
         let spacing: CGFloat = min(150, size.width / 8.0)
         let y = size.height * 0.50
@@ -435,8 +447,7 @@ final class GameScene: SKScene {
         }
 
         let draw = SKAction.repeat(SKAction.sequence([
-            SKAction.run { [weak self] in
-                guard let self else { return }
+            SKAction.run {
                 if allPoints.isEmpty { return }
                 let t = (dot.userData?["t"] as? Int) ?? 0
                 let nextT = t + 1
@@ -466,6 +477,7 @@ final class GameScene: SKScene {
                     let scaled2 = pr * Double(segmentCount)
                     let seg2 = min(segmentCount - 1, Int(scaled2))
                     let local2 = scaled2 - Double(seg2)
+
                     let a2 = allPoints[seg2]
                     let b2 = allPoints[seg2 + 1]
                     let x2 = a2.x + CGFloat(local2) * (b2.x - a2.x)
@@ -482,7 +494,9 @@ final class GameScene: SKScene {
 
                 let letterIndex = min(allPoints.count - 1, Int(round(progress * Double(allPoints.count - 1))))
                 setAllLetters(color: .white)
-                for i in 0...letterIndex { highlightLetter(at: i) }
+                if letterIndex >= 0 {
+                    for i in 0...letterIndex { highlightLetter(at: i) }
+                }
             },
             SKAction.wait(forDuration: stepTime)
         ]), count: steps)
@@ -516,25 +530,26 @@ final class GameScene: SKScene {
     private func beginGame() {
         startOverlay?.removeFromParent()
         startOverlay = nil
-
         hideTutorialOverlay()
 
         gameStarted = true
         gameEnded = false
+        roundActive = false
 
         score = 0
-        roundIndex = 0
-
         foundWords.removeAll()
         possibleWords.removeAll()
         selectedIndices.removeAll()
-        jumbledLetters.removeAll()
+        baseLetters.removeAll()
+
+        roundTimer?.invalidate()
+        roundTimer = nil
 
         for node in letterNodes { node.removeFromParent() }
         letterNodes.removeAll()
 
         currentWordLabel?.text = ""
-        timeRemaining = 0
+        timeRemaining = roundDurationSeconds
         updateTimerLabel()
 
         activeSlicePoints.removeAll(keepingCapacity: true)
@@ -543,12 +558,108 @@ final class GameScene: SKScene {
         activeSliceBG.alpha = 0
         activeSliceFG.alpha = 0
 
-        startNewRound()
+        startNewGameWord()
+    }
+
+    private func startNewGameWord() {
+        // Pick ONE random base word for this entire game
+        var chosen = startWords.randomElement() ?? "ORANGE"
+        // Small anti-repeat (optional)
+        // If you want this to be allowed, delete these 3 lines.
+        if startWords.count > 1 {
+            var tries = 0
+            while chosen == String(baseLetters) && tries < 10 {
+                chosen = startWords.randomElement() ?? chosen
+                tries += 1
+            }
+        }
+
+        baseLetters = Array(chosen.uppercased())
+        baseLetters.shuffle()
+
+        // Build possible solution set for this game (3+ letters only)
+        possibleWords = generatePossibleWords(from: baseLetters, minLength: 3)
+        foundWords.removeAll()
+
+        spawnLetters(letters: baseLetters)
+
+        roundActive = true
+        startRoundTimer(seconds: roundDurationSeconds)
+    }
+
+    private func spawnLetters(letters: [Character]) {
+        for node in letterNodes { node.removeFromParent() }
+        letterNodes.removeAll()
+
+        physicsWorld.gravity = CGVector(dx: 0, dy: 0)
+
+        let letterSize = CGSize(width: 72, height: 72)
+        let leftInset: CGFloat = max(30, safeInsets.left + 24)
+        let rightInset: CGFloat = max(30, safeInsets.right + 24)
+        let bottomInset: CGFloat = 120
+        let topInset: CGFloat = max(220, safeInsets.top + 220)
+
+        let playableRect = CGRect(
+            x: leftInset + letterSize.width * 0.6,
+            y: bottomInset + letterSize.height * 0.6,
+            width: size.width - leftInset - rightInset - letterSize.width * 1.2,
+            height: size.height - topInset - bottomInset - letterSize.height * 1.2
+        )
+
+        let minCenterDistance: CGFloat = 150
+        let targets = randomNonOverlappingPositions(
+            count: letters.count,
+            in: playableRect,
+            minDistance: minCenterDistance
+        )
+
+        for (index, letter) in letters.enumerated() {
+            let letterNode = SKSpriteNode(color: .clear, size: CGSize(width: 118, height: 92))
+            letterNode.name = "letter_\(index)"
+            letterNode.zPosition = 10
+
+            let target = targets[index]
+            letterNode.position = CGPoint(x: target.x, y: -90)
+
+            let bamboo = SKSpriteNode(imageNamed: bambooImageName)
+            bamboo.size = CGSize(width: 120, height: 120)
+            bamboo.position = .zero
+            bamboo.zPosition = -1
+            bamboo.alpha = 0.98
+            letterNode.addChild(bamboo)
+
+            let label = SKLabelNode(fontNamed: "Chalkduster")
+            label.name = "letterLabel"
+            label.text = String(letter)
+            label.fontSize = 54
+            label.fontColor = .white
+            label.verticalAlignmentMode = .center
+            label.horizontalAlignmentMode = .center
+            label.position = CGPoint(x: -14, y: -4)
+            letterNode.addChild(label)
+
+            letterNode.physicsBody = SKPhysicsBody(rectangleOf: letterNode.size)
+            letterNode.physicsBody?.collisionBitMask = 0
+            letterNode.physicsBody?.linearDamping = 0
+            letterNode.physicsBody?.angularDamping = 0
+            letterNode.physicsBody?.allowsRotation = false
+
+            addChild(letterNode)
+            letterNodes.append(letterNode)
+
+            let duration = Double.random(in: 0.45...0.75)
+            let rise = SKAction.move(to: target, duration: duration)
+            rise.timingMode = .easeOut
+            letterNode.run(rise) { [weak letterNode] in
+                letterNode?.physicsBody?.isDynamic = false
+            }
+        }
+
+        for node in letterNodes { node.alpha = 1.0 }
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
-
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
         let tappedNodes = nodes(at: location)
@@ -677,7 +788,10 @@ final class GameScene: SKScene {
     }
 
     private func buildSelectedWord() -> String {
-        let chars: [Character] = selectedIndices.map { jumbledLetters[$0] }
+        let chars: [Character] = selectedIndices.compactMap { idx in
+            guard idx >= 0 && idx < baseLetters.count else { return nil }
+            return baseLetters[idx]
+        }
         return String(chars)
     }
 
@@ -719,7 +833,7 @@ final class GameScene: SKScene {
         physicsWorld.gravity = CGVector(dx: 0, dy: -6)
         for node in letterNodes { node.physicsBody?.isDynamic = true }
 
-        endGame(triggeredByBomb: false)
+        endGame()
     }
 
     private func pointsForWord(length: Int) -> Int {
@@ -740,13 +854,10 @@ final class GameScene: SKScene {
     private func validate(candidate: String, usedIndices: [Int]) {
         let upper = candidate.uppercased()
 
+        // 3-letter minimum
         guard upper.count >= 3 else {
             feedbackIncorrect(indices: usedIndices)
             return
-        }
-
-        if possibleWords.isEmpty {
-            possibleWords = generatePossibleWords(from: jumbledLetters)
         }
 
         guard possibleWords.contains(upper) else {
@@ -760,16 +871,14 @@ final class GameScene: SKScene {
         }
 
         foundWords.insert(upper)
-        perRoundFound[roundIndex].append(upper)
 
         let gained = pointsForWord(length: upper.count)
         score += gained
 
         feedbackCorrect(indices: usedIndices)
 
-        if foundWords.count == possibleWords.count {
-            roundComplete()
-        }
+        // IMPORTANT: DO NOT end early when all words are found.
+        // You wanted it to keep running until time is up.
     }
 
     private func feedbackCorrect(indices: [Int]) {
@@ -815,7 +924,7 @@ final class GameScene: SKScene {
         }
     }
 
-    private func generatePossibleWords(from letters: [Character]) -> Set<String> {
+    private func generatePossibleWords(from letters: [Character], minLength: Int) -> Set<String> {
         let pool = letters.map { String($0).uppercased() }
         var counts: [String: Int] = [:]
         for l in pool { counts[l, default: 0] += 1 }
@@ -830,111 +939,123 @@ final class GameScene: SKScene {
             return true
         }
 
-        return Set(demoDictionary.map { $0.uppercased() }.filter { canForm($0) })
+        return Set(
+            demoDictionary
+                .map { $0.uppercased() }
+                .filter { $0.count >= minLength && canForm($0) }
+        )
     }
 
-    private func roundComplete() {
+    private func endGame() {
+        if gameEnded { return }
+
+        gameEnded = true
         roundActive = false
+
         roundTimer?.invalidate()
         roundTimer = nil
 
-        run(SKAction.playSoundFileNamed("whack.caf", waitForCompletion: false))
-        run(SKAction.wait(forDuration: 0.35)) { [weak self] in
-            guard let self else { return }
-            self.advanceRoundOrEnd()
-        }
+        physicsWorld.speed = 0
+
+        showGameOverOverlay()
     }
 
-    private func advanceRoundOrEnd() {
-        if roundIndex + 1 < roundWords.count {
-            roundIndex += 1
-            startNewRound()
-        } else {
-            endGame(triggeredByBomb: false)
-        }
+    private func showGameOverOverlay() {
+        gameOverOverlay?.removeFromParent()
+
+        let overlay = SKNode()
+        overlay.zPosition = 1000
+        addChild(overlay)
+        gameOverOverlay = overlay
+
+        let dim = SKSpriteNode(color: UIColor(white: 0, alpha: 0.75), size: size)
+        dim.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        overlay.addChild(dim)
+
+        let title = SKLabelNode(fontNamed: "Chalkduster")
+        title.text = "Time's Up"
+        title.fontSize = 64
+        title.fontColor = .white
+        title.position = CGPoint(x: size.width / 2, y: size.height * 0.75)
+        overlay.addChild(title)
+
+        let scoreLabel = SKLabelNode(fontNamed: "Chalkduster")
+        scoreLabel.text = "Score: \(score)"
+        scoreLabel.fontSize = 44
+        scoreLabel.fontColor = .white
+        scoreLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.68)
+        overlay.addChild(scoreLabel)
+
+        let missing = Array(possibleWords.subtracting(foundWords)).sorted()
+        let found = Array(foundWords).sorted()
+
+        let foundText = found.joined(separator: ", ")
+        let missingText = missing.joined(separator: ", ")
+
+        let foundLabel = SKLabelNode(fontNamed: "Chalkduster")
+        foundLabel.text = "Found (\(found.count)): \(foundText)"
+        foundLabel.fontSize = 20
+        foundLabel.fontColor = .white
+        foundLabel.horizontalAlignmentMode = .center
+        foundLabel.verticalAlignmentMode = .top
+        foundLabel.numberOfLines = 0
+        foundLabel.preferredMaxLayoutWidth = size.width * 0.9
+        foundLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.58)
+        overlay.addChild(foundLabel)
+
+        let missingLabel = SKLabelNode(fontNamed: "Chalkduster")
+        missingLabel.text = "Missing (\(missing.count)): \(missingText)"
+        missingLabel.fontSize = 20
+        missingLabel.fontColor = .white
+        missingLabel.horizontalAlignmentMode = .center
+        missingLabel.verticalAlignmentMode = .top
+        missingLabel.numberOfLines = 0
+        missingLabel.preferredMaxLayoutWidth = size.width * 0.9
+        missingLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.42)
+        overlay.addChild(missingLabel)
+
+        let playAgain = SKLabelNode(fontNamed: "Chalkduster")
+        playAgain.text = "Play Again"
+        playAgain.fontSize = 34
+        playAgain.fontColor = .white
+        playAgain.position = CGPoint(x: size.width / 2, y: size.height * 0.20)
+        playAgain.name = "btn_play_again"
+        overlay.addChild(playAgain)
+
+        let subHint = SKLabelNode(fontNamed: "Chalkduster")
+        subHint.text = "Tap to start a new random word"
+        subHint.fontSize = 18
+        subHint.fontColor = UIColor(white: 1, alpha: 0.75)
+        subHint.position = CGPoint(x: size.width / 2, y: size.height * 0.16)
+        overlay.addChild(subHint)
     }
 
-    private func startNewRound() {
+    private func restartGame() {
+        gameOverOverlay?.removeFromParent()
+        gameOverOverlay = nil
+
+        roundTimer?.invalidate()
+        roundTimer = nil
+
+        physicsWorld.speed = 0.85
+        physicsWorld.gravity = CGVector(dx: 0, dy: 0)
+
+        gameEnded = false
+        gameStarted = false
+        roundActive = false
+
+        score = 0
+        foundWords.removeAll()
+        possibleWords.removeAll()
+        selectedIndices.removeAll()
+        baseLetters.removeAll()
+
         for node in letterNodes { node.removeFromParent() }
         letterNodes.removeAll()
 
-        physicsWorld.gravity = CGVector(dx: 0, dy: 0)
-
-        foundWords.removeAll()
-        possibleWords.removeAll()
-        clearSelectionUIAndState()
-
-        let baseWord = roundWords[roundIndex].uppercased()
-        jumbledLetters = Array(baseWord)
-        jumbledLetters.shuffle()
-
-        possibleWords = generatePossibleWords(from: jumbledLetters)
-
-        let letterSize = CGSize(width: 72, height: 72)
-        let leftInset: CGFloat = max(30, safeInsets.left + 24)
-        let rightInset: CGFloat = max(30, safeInsets.right + 24)
-        let bottomInset: CGFloat = 120
-        let topInset: CGFloat = max(220, safeInsets.top + 220)
-
-        let playableRect = CGRect(
-            x: leftInset + letterSize.width * 0.6,
-            y: bottomInset + letterSize.height * 0.6,
-            width: size.width - leftInset - rightInset - letterSize.width * 1.2,
-            height: size.height - topInset - bottomInset - letterSize.height * 1.2
-        )
-
-        let minCenterDistance: CGFloat = 150
-        let targets = randomNonOverlappingPositions(
-            count: jumbledLetters.count,
-            in: playableRect,
-            minDistance: minCenterDistance
-        )
-
-        for (index, letter) in jumbledLetters.enumerated() {
-            let letterNode = SKSpriteNode(color: .clear, size: CGSize(width: 118, height: 92))
-            letterNode.name = "letter_\(index)"
-            letterNode.zPosition = 10
-
-            let target = targets[index]
-            letterNode.position = CGPoint(x: target.x, y: -90)
-
-            let bamboo = SKSpriteNode(imageNamed: bambooImageName)
-            bamboo.size = CGSize(width: 120, height: 120)
-            bamboo.position = .zero
-            bamboo.zPosition = -1
-            bamboo.alpha = 0.98
-            letterNode.addChild(bamboo)
-
-            let label = SKLabelNode(fontNamed: "Chalkduster")
-            label.name = "letterLabel"
-            label.text = String(letter)
-            label.fontSize = 54
-            label.fontColor = .white
-            label.verticalAlignmentMode = .center
-            label.horizontalAlignmentMode = .center
-            label.position = CGPoint(x: -14, y: -4)
-            letterNode.addChild(label)
-
-            letterNode.zRotation = 0
-
-            letterNode.physicsBody = SKPhysicsBody(rectangleOf: letterNode.size)
-            letterNode.physicsBody?.collisionBitMask = 0
-            letterNode.physicsBody?.linearDamping = 0
-            letterNode.physicsBody?.angularDamping = 0
-            letterNode.physicsBody?.allowsRotation = false
-
-            addChild(letterNode)
-            letterNodes.append(letterNode)
-
-            let duration = Double.random(in: 0.45...0.75)
-            let rise = SKAction.move(to: target, duration: duration)
-            rise.timingMode = .easeOut
-            letterNode.run(rise) { [weak letterNode] in
-                letterNode?.physicsBody?.isDynamic = false
-            }
-        }
-
-        for node in letterNodes { node.alpha = 1.0 }
+        currentWordLabel?.text = ""
+        timeRemaining = 0
+        updateTimerLabel()
 
         activeSlicePoints.removeAll(keepingCapacity: true)
         activeSliceBG.path = nil
@@ -942,10 +1063,28 @@ final class GameScene: SKScene {
         activeSliceBG.alpha = 0
         activeSliceFG.alpha = 0
 
-        roundActive = true
-        timeRemaining = roundDurationSeconds
-        updateTimerLabel()
-        startRoundTimer(seconds: roundDurationSeconds)
+        showStartOverlay()
+    }
+
+    private func redrawActiveSlice() {
+        guard activeSlicePoints.count >= 2 else {
+            activeSliceBG.path = nil
+            activeSliceFG.path = nil
+            return
+        }
+
+        while activeSlicePoints.count > 12 {
+            activeSlicePoints.remove(at: 0)
+        }
+
+        let path = UIBezierPath()
+        path.move(to: activeSlicePoints[0])
+        for i in 1 ..< activeSlicePoints.count {
+            path.addLine(to: activeSlicePoints[i])
+        }
+
+        activeSliceBG.path = path.cgPath
+        activeSliceFG.path = path.cgPath
     }
 
     private func randomNonOverlappingPositions(count: Int, in rect: CGRect, minDistance: CGFloat) -> [CGPoint] {
@@ -1005,217 +1144,6 @@ final class GameScene: SKScene {
 
         points.shuffle()
         return points
-    }
-
-    private func endGame(triggeredByBomb: Bool) {
-        if gameEnded { return }
-
-        gameEnded = true
-        roundActive = false
-
-        roundTimer?.invalidate()
-        roundTimer = nil
-
-        physicsWorld.speed = 0
-
-        bombSoundEffect?.stop()
-        bombSoundEffect = nil
-
-        showGameOverOverlay()
-    }
-
-    private func showGameOverOverlay() {
-        gameOverOverlay?.removeFromParent()
-
-        let overlay = SKNode()
-        overlay.zPosition = 1000
-        addChild(overlay)
-        gameOverOverlay = overlay
-
-        let dim = SKSpriteNode(color: UIColor(white: 0, alpha: 0.75), size: size)
-        dim.position = CGPoint(x: size.width / 2, y: size.height / 2)
-        overlay.addChild(dim)
-
-        let title = SKLabelNode(fontNamed: "Chalkduster")
-        title.text = "Game Over"
-        title.fontSize = 64
-        title.fontColor = .white
-        title.position = CGPoint(x: size.width / 2, y: size.height * 0.75)
-        overlay.addChild(title)
-
-        let scoreLabel = SKLabelNode(fontNamed: "Chalkduster")
-        scoreLabel.text = "Score: \(score)"
-        scoreLabel.fontSize = 44
-        scoreLabel.fontColor = .white
-        scoreLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.68)
-        overlay.addChild(scoreLabel)
-
-        let missing = Array(possibleWords.subtracting(foundWords)).sorted()
-        let found = Array(foundWords).sorted()
-
-        let foundText = found.joined(separator: ", ")
-        let missingText = missing.joined(separator: ", ")
-
-        let foundLabel = SKLabelNode(fontNamed: "Chalkduster")
-        foundLabel.text = "Found (\(found.count)): \(foundText)"
-        foundLabel.fontSize = 20
-        foundLabel.fontColor = .white
-        foundLabel.horizontalAlignmentMode = .center
-        foundLabel.verticalAlignmentMode = .top
-        foundLabel.numberOfLines = 0
-        foundLabel.preferredMaxLayoutWidth = size.width * 0.9
-        foundLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.58)
-        overlay.addChild(foundLabel)
-
-        let missingLabel = SKLabelNode(fontNamed: "Chalkduster")
-        missingLabel.text = "Missing (\(missing.count)): \(missingText)"
-        missingLabel.fontSize = 20
-        missingLabel.fontColor = .white
-        missingLabel.horizontalAlignmentMode = .center
-        missingLabel.verticalAlignmentMode = .top
-        missingLabel.numberOfLines = 0
-        missingLabel.preferredMaxLayoutWidth = size.width * 0.9
-        missingLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.42)
-        overlay.addChild(missingLabel)
-
-        let playAgain = SKLabelNode(fontNamed: "Chalkduster")
-        playAgain.text = "Play Again"
-        playAgain.fontSize = 34
-        playAgain.fontColor = .white
-        playAgain.position = CGPoint(x: size.width / 2, y: size.height * 0.20)
-        playAgain.name = "btn_play_again"
-        overlay.addChild(playAgain)
-
-        let subHint = SKLabelNode(fontNamed: "Chalkduster")
-        subHint.text = "Tap to restart"
-        subHint.fontSize = 18
-        subHint.fontColor = UIColor(white: 1, alpha: 0.75)
-        subHint.position = CGPoint(x: size.width / 2, y: size.height * 0.16)
-        overlay.addChild(subHint)
-    }
-
-    private func restartGame() {
-        gameOverOverlay?.removeFromParent()
-        gameOverOverlay = nil
-
-        roundTimer?.invalidate()
-        roundTimer = nil
-
-        physicsWorld.speed = 0.85
-        physicsWorld.gravity = CGVector(dx: 0, dy: 0)
-
-        gameEnded = false
-        gameStarted = false
-
-        score = 0
-        roundIndex = 0
-
-        foundWords.removeAll()
-        possibleWords.removeAll()
-        selectedIndices.removeAll()
-        jumbledLetters.removeAll()
-
-        for node in letterNodes { node.removeFromParent() }
-        letterNodes.removeAll()
-
-        currentWordLabel?.text = ""
-        timeRemaining = 0
-        updateTimerLabel()
-
-        activeSlicePoints.removeAll(keepingCapacity: true)
-        activeSliceBG.path = nil
-        activeSliceFG.path = nil
-        activeSliceBG.alpha = 0
-        activeSliceFG.alpha = 0
-
-        showStartOverlay()
-    }
-
-    private func redrawActiveSlice() {
-        guard activeSlicePoints.count >= 2 else {
-            activeSliceBG.path = nil
-            activeSliceFG.path = nil
-            return
-        }
-
-        while activeSlicePoints.count > 12 {
-            activeSlicePoints.remove(at: 0)
-        }
-
-        let path = UIBezierPath()
-        path.move(to: activeSlicePoints[0])
-        for i in 1 ..< activeSlicePoints.count {
-            path.addLine(to: activeSlicePoints[i])
-        }
-
-        activeSliceBG.path = path.cgPath
-        activeSliceFG.path = path.cgPath
-    }
-
-    private func playSwooshSound() {
-        isSwooshSoundActive = true
-        let randomNumber = Int.random(in: 1...3)
-        let soundName = "swoosh\(randomNumber).caf"
-        let swooshSound = SKAction.playSoundFileNamed(soundName, waitForCompletion: true)
-        run(swooshSound) { [unowned self] in
-            self.isSwooshSoundActive = false
-        }
-    }
-
-    private func createEnemy(forceBomb: ForceBomb = .random) {
-        var enemy: SKSpriteNode
-        var enemyType = Int.random(in: 0...6)
-        if forceBomb == .never { enemyType = 1 }
-        else if forceBomb == .always { enemyType = 0 }
-
-        if enemyType == 0 {
-            enemy = SKSpriteNode()
-            enemy.zPosition = 1
-            enemy.name = "bombContainer"
-
-            let bombImage = SKSpriteNode(imageNamed: "sliceBomb")
-            bombImage.name = "bomb"
-            enemy.addChild(bombImage)
-
-            bombSoundEffect?.stop()
-            bombSoundEffect = nil
-
-            if let url = Bundle.main.url(forResource: "sliceBombFuse", withExtension: "caf"),
-               let sound = try? AVAudioPlayer(contentsOf: url) {
-                bombSoundEffect = sound
-                sound.play()
-            }
-
-            if let emitter = SKEmitterNode(fileNamed: "sliceFuse") {
-                emitter.position = CGPoint(x: 76, y: 64)
-                enemy.addChild(emitter)
-            }
-        } else {
-            enemy = SKSpriteNode(imageNamed: "penguin")
-            run(SKAction.playSoundFileNamed("launch.caf", waitForCompletion: false))
-            enemy.name = "enemy"
-        }
-
-        let randomPosition = CGPoint(x: Int.random(in: 64...960), y: -128)
-        enemy.position = randomPosition
-
-        let randomAngularVelocity = CGFloat.random(in: -6...6) / 2.0
-
-        var randomXVelocity = 0
-        if randomPosition.x < 256 { randomXVelocity = Int.random(in: 8...15) }
-        else if randomPosition.x < 512 { randomXVelocity = Int.random(in: 3...5) }
-        else if randomPosition.x < 768 { randomXVelocity = -Int.random(in: 3...5) }
-        else { randomXVelocity = -Int.random(in: 8...15) }
-
-        let randomYVelocity = Int.random(in: 24...32)
-
-        enemy.physicsBody = SKPhysicsBody(circleOfRadius: 64)
-        enemy.physicsBody?.velocity = CGVector(dx: randomXVelocity * 40, dy: randomYVelocity * 40)
-        enemy.physicsBody?.angularVelocity = randomAngularVelocity
-        enemy.physicsBody?.collisionBitMask = 0
-
-        addChild(enemy)
-        activeEnemies.append(enemy)
     }
 
     override func update(_ currentTime: TimeInterval) { }
