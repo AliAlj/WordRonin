@@ -1,19 +1,16 @@
-//RootModeView
 import SwiftUI
+
 struct RootModeView: View {
     @State private var selectedMode: AppMode? = nil
+
     var body: some View {
         Group {
             if let mode = selectedMode {
                 switch mode {
                 case .slice:
-                    SliceModeContainerView(onExit: {
-                        selectedMode = nil
-                    })
+                    SliceModeContainerView(onExit: { selectedMode = nil })
                 case .listening:
-                    ListeningModeContainerView(onExit: {
-                        selectedMode = nil
-                    })
+                    ListeningModeContainerView(onExit: { selectedMode = nil })
                 }
             } else {
                 ModeSelectView(onSelect: { mode in
@@ -23,51 +20,76 @@ struct RootModeView: View {
         }
     }
 }
+
 private struct ModeSelectView: View {
     let onSelect: (AppMode) -> Void
+
     var body: some View {
-        ZStack {
-            Color.black.opacity(0.95).ignoresSafeArea()
-            VStack(spacing: 18) {
-                Text("WordRonin")
-                    .font(.system(size: 40, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
-                Text("Choose a mode")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(.white.opacity(0.85))
-                VStack(spacing: 12) {
-                    Button {
-                        onSelect(.slice)
-                    } label: {
-                        Text("Slice Mode")
-                            .font(.system(size: 20, weight: .bold, design: .rounded))
-                            .frame(maxWidth: 320)
-                            .frame(height: 52)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.white)
-                    .foregroundStyle(.black)
-                    Button {
-                        onSelect(.listening)
-                    } label: {
-                        Text("Listening Mode")
-                            .font(.system(size: 20, weight: .bold, design: .rounded))
-                            .frame(maxWidth: 320)
-                            .frame(height: 52)
-                    }
-                    .buttonStyle(.bordered)
-                    .tint(.white)
-                    .foregroundStyle(.white)
-                }
-                .padding(.top, 10)
-                Text("Listening Mode reads scrambled letters out loud for accessibility.")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.75))
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 28)
-                    .padding(.top, 8)
+        GeometryReader { geo in
+            ZStack {
+                Image("sliceBackground")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: geo.size.width, height: geo.size.height)
+                    .clipped()
+                    .ignoresSafeArea()
+
+                ModeIconButton(
+                    imageName: "katana",
+                    title: "SLICE MODE",
+                    imageSize: CGSize(width: 180, height: 180),
+                    onTap: { onSelect(.slice) }
+                )
+                .position(
+                    x: geo.size.width * 0.24,
+                    y: geo.size.height * 0.5
+                )
+
+                ModeIconButton(
+                    imageName: "ninja",
+                    title: "LISTEN MODE",
+                    imageSize: CGSize(width: 180, height: 180),
+                    onTap: { onSelect(.listening) }
+                )
+                .position(
+                    x: geo.size.width * 0.76,
+                    y: geo.size.height * 0.5
+                )
             }
-            .padding(.horizontal, 24)
         }
     }
+}
+
+private struct ModeIconButton: View {
+    let imageName: String
+    let title: String
+    let imageSize: CGSize
+    let onTap: () -> Void
+
+    var body: some View {
+        Button {
+            onTap()
+        } label: {
+            VStack(spacing: 10) {
+                Image(imageName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: imageSize.width, height: imageSize.height)
+                    .shadow(radius: 8)
+
+                Text(title)
+                    .font(.system(size: 34, weight: .heavy, design: .rounded))
+                    .foregroundStyle(.white)
+                    .shadow(radius: 6)
+            }
+            .padding(.horizontal, 18)
+            .padding(.vertical, 14)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+#Preview("Mode Select") {
+    RootModeView()
 }
