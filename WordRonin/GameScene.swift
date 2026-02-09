@@ -876,9 +876,6 @@ final class GameScene: SKScene {
         score += gained
 
         feedbackCorrect(indices: usedIndices)
-
-        // IMPORTANT: DO NOT end early when all words are found.
-        // You wanted it to keep running until time is up.
     }
 
     private func feedbackCorrect(indices: [Int]) {
