@@ -34,7 +34,7 @@ struct StartScreen: View {
                 .buttonStyle(.bordered)
             }
             .padding(.horizontal, 22)
-
+            .accessibilityHint("Listen to the word.")
             Spacer()
         }
     }
