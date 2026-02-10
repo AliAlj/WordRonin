@@ -1,4 +1,4 @@
-// RootModeView
+// RootModeView.swift
 import SwiftUI
 
 struct RootModeView: View {
@@ -28,7 +28,7 @@ private struct ModeSelectView: View {
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                Image("sliceBackground")
+                Image("gameBackground")
                     .resizable()
                     .scaledToFill()
                     .frame(width: geo.size.width, height: geo.size.height)
@@ -36,25 +36,21 @@ private struct ModeSelectView: View {
                     .ignoresSafeArea()
 
                 ModeIconButton(
-                    imageName: "katana",
-                    title: "SLICE MODE",
-                    imageSize: CGSize(width: 180, height: 180),
+                    imageName: "slicemodebutton",
                     onTap: { onSelect(.slice) }
                 )
                 .position(
-                    x: geo.size.width * 0.24,
-                    y: geo.size.height * 0.5
+                    x: geo.size.width * 0.25,
+                    y: geo.size.height * 0.45
                 )
 
                 ModeIconButton(
-                    imageName: "ninja",
-                    title: "LISTEN MODE",
-                    imageSize: CGSize(width: 180, height: 180),
+                    imageName: "listenmodebutton",
                     onTap: { onSelect(.listening) }
                 )
                 .position(
                     x: geo.size.width * 0.76,
-                    y: geo.size.height * 0.5
+                    y: geo.size.height * 0.45
                 )
             }
         }
@@ -63,34 +59,24 @@ private struct ModeSelectView: View {
 
 private struct ModeIconButton: View {
     let imageName: String
-    let title: String
-    let imageSize: CGSize
     let onTap: () -> Void
 
     var body: some View {
         Button {
             onTap()
         } label: {
-            VStack(spacing: 10) {
-                Image(imageName)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: imageSize.width, height: imageSize.height)
-                    .shadow(radius: 8)
-
-                Text(title)
-                    .font(.system(size: 34, weight: .heavy, design: .rounded))
-                    .foregroundStyle(.white)
-                    .shadow(radius: 6)
-            }
-            .padding(.horizontal, 18)
-            .padding(.vertical, 14)
-            .contentShape(Rectangle())
+            Image(imageName)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 220, height: 50)
+                .shadow(radius: 6)
+                .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
 }
 
-#Preview("Mode Select") {
+
+#Preview("Mode Select", traits: .landscapeLeft) {
     RootModeView()
 }
