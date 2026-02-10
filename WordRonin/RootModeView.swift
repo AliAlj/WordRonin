@@ -68,14 +68,14 @@ private struct ModeIconButton: View {
             Image(imageName)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 220, height: 50)
+                .frame(width: 220)              // ✅ remove fixed height to avoid “bar”
                 .shadow(radius: 6)
+                .frame(width: 220, height: 80)  // ✅ keeps a nice tap target
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
 }
-
 
 #Preview("Mode Select", traits: .landscapeLeft) {
     RootModeView()

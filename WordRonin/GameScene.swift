@@ -22,19 +22,22 @@ final class GameScene: SKScene {
 
     // Assets
     private let bambooImageName = "bamboo_slice"         // letter tile bamboo
-    private let buttonBambooImageName = "fullBamboo"     // button background
+    private let buttonBambooImageName = "fullBamboo"     // shared bamboo asset
     private let inGameBackgroundName = "sliceBackground" // in-game background (slice + listen)
     private let menuBackgroundName = "gameBackground"    // lobby/menu background
+    private let backButtonImageName = "backbutton"
 
-    // Button names (separate so menu/tutorial/gameplay don’t conflict)
+    // Menu button image assets
+    private let startGameButtonImageName = "startgamebutton"
+    private let howToPlayButtonImageName = "howtoplaybutton"
+
+    // Button names
     private let menuBackButtonName = "btn_menu_back"
     private let tutorialBackButtonName = "btn_tutorial_back"
     private let inGameBackButtonName = "btn_ingame_back"
 
-    // In-game back button node
     private var inGameBackButton: SKNode?
 
-    // One random base word per game start
     private let startWords: [String] = ["ORANGE", "PLANET", "STREAM", "CAMERA", "POCKET", "APRICOT"]
 
     private var baseLetters: [Character] = []
@@ -69,14 +72,20 @@ final class GameScene: SKScene {
     private var tutorialOverlay: SKNode?
 
     private var safeInsets: UIEdgeInsets = .zero
-    private func effectiveRightPadding() -> CGFloat { max(24, safeInsets.right + 24) }
+    private func effectiveRightPadding() -> CGFloat { max(24, safeInsets.right + 120) }
     private func effectiveTopPadding() -> CGFloat { max(32, safeInsets.top + 32) }
 
-    // Background node name
     private let backgroundNodeName = "scene_background"
-
-    // Keep references to the menu buttons so we can fade them when tutorial is shown
     private var startMenuButtonsContainer: SKNode?
+
+    // HUD bamboo containers
+    private var scoreHud: SKNode?
+    private var timerHud: SKNode?
+
+    // Layout tuning
+    private let hudBambooSize = CGSize(width: 300, height: 215)
+    private let hudZ: CGFloat = 120
+    private let hudTextZ: CGFloat = 122
 
     private let demoDictionary: Set<String> = [
         // ORANGE
@@ -93,7 +102,7 @@ final class GameScene: SKScene {
 
         // STREAM
         "STREAM","MASTER","TAMERS",
-        "SMEAR","STARE","TEARS","RATES","TAMES","TEAMS",
+        "SMEAR","STARE","TEARS","RATES","TAMES","TEAMS","SMART",
         "SAME","SEAM","TEAM","MATE","MEAT","TAME","EAST","SEAT","RATE","STAR","EARS","TEAR",
         "ARM","RAM","TAR","RAT","ART","MET","SET","SEA","EAT","ATE","TEA",
 
@@ -127,10 +136,10 @@ final class GameScene: SKScene {
         physicsWorld.speed = 0.85
         backgroundColor = .clear
 
-        createScore()
+        createScoreHUD()
         createSlices()
         createCurrentWordLabel()
-        createTimerLabel()
+        createTimerHUD()
 
         gameStarted = false
         roundActive = false
@@ -140,7 +149,6 @@ final class GameScene: SKScene {
         currentWordLabel?.text = ""
 
         hideInGameBackButton()
-
         showStartOverlay()
     }
 
@@ -167,24 +175,15 @@ final class GameScene: SKScene {
             showGameOverOverlay()
         }
 
-        let topPad = effectiveTopPadding()
-        let rightPad = effectiveRightPadding()
-
-        currentWordLabel?.position = CGPoint(x: size.width / 2, y: size.height - topPad)
-
-        if let timerLabel = timerLabel {
-            timerLabel.position = CGPoint(x: size.width - rightPad, y: size.height - topPad)
-            if let shadow = timerLabel.userData?["shadow"] as? SKLabelNode {
-                shadow.position = CGPoint(x: timerLabel.position.x + 1.5, y: timerLabel.position.y - 1.5)
-            }
-        }
+        positionHUD()
+        positionTopLabels()
 
         if gameStarted && !gameEnded {
             showInGameBackButton()
         }
     }
 
-    // MARK: - Background Helpers
+    // MARK: Background
 
     private func ensureBackground(named imageName: String) {
         if let bg = childNode(withName: "//\(backgroundNodeName)") as? SKSpriteNode {
@@ -221,7 +220,7 @@ final class GameScene: SKScene {
     private func setMenuBackground() { ensureBackground(named: menuBackgroundName) }
     private func setInGameBackground() { ensureBackground(named: inGameBackgroundName) }
 
-    // MARK: - UI Helpers (FullBamboo buttons)
+    // MARK: UI Helpers
 
     private func makeBambooButton(
         title: String,
@@ -255,42 +254,77 @@ final class GameScene: SKScene {
         return container
     }
 
-    private func addTopLeftBackButton(to parent: SKNode, title: String = "Back", name: String) {
-        // narrower on purpose (your screenshot showed it too wide)
-        let w = min(230, size.width * 0.18)
-        let h: CGFloat = 140
+    private func makeImageButton(
+        imageName: String,
+        name: String,
+        position: CGPoint,
+        maxWidth: CGFloat
+    ) -> SKNode {
+        let container = SKNode()
+        container.name = name
+        container.position = position
+        container.zPosition = 1001
 
-        let x = max(18, safeInsets.left + 18) + w * 0.5
-        let y = size.height - (max(18, safeInsets.top + 18) + h * 0.5)
+        let sprite = SKSpriteNode(imageNamed: imageName)
+        sprite.name = name
+        sprite.zPosition = 0
 
-        let btn = makeBambooButton(
-            title: title,
+        let texSize = sprite.texture?.size() ?? CGSize(width: 1, height: 1)
+        let scale = maxWidth / max(1, texSize.width)
+        sprite.setScale(scale)
+
+        container.addChild(sprite)
+        return container
+    }
+
+    // FIXED: positions by center using the image’s scaled size
+    private func addTopLeftBackImageButton(to parent: SKNode, name: String) {
+        let maxW = min(220, size.width * 0.12)
+
+        let btn = makeImageButton(
+            imageName: backButtonImageName,
             name: name,
-            position: CGPoint(x: x, y: y),
-            size: CGSize(width: w, height: h),
-            fontSize: 22
+            position: .zero,
+            maxWidth: maxW
+        )
+
+        let sprite = btn.children.compactMap { $0 as? SKSpriteNode }.first
+        let w = sprite?.size.width ?? maxW
+        let h = sprite?.size.height ?? (maxW * 0.5)
+
+        let left = max(18, safeInsets.left + 18)
+        let top = max(18, safeInsets.top + 18)
+
+        btn.position = CGPoint(
+            x: left + w * 0.5,
+            y: size.height - top - h * 0.5
         )
 
         parent.addChild(btn)
     }
 
-    // In-game back button
     private func showInGameBackButton() {
         inGameBackButton?.removeFromParent()
 
-        // narrower than before
-        let w = min(230, size.width * 0.18)
-        let h: CGFloat = 140
+        let maxW = min(220, size.width * 0.12)
 
-        let x = max(18, safeInsets.left + 18) + w * 0.5
-        let y = size.height - (max(18, safeInsets.top + 18) + h * 0.5)
-
-        let btn = makeBambooButton(
-            title: "Back",
+        let btn = makeImageButton(
+            imageName: backButtonImageName,
             name: inGameBackButtonName,
-            position: CGPoint(x: x, y: y),
-            size: CGSize(width: w, height: h),
-            fontSize: 22
+            position: .zero,
+            maxWidth: maxW
+        )
+
+        let sprite = btn.children.compactMap { $0 as? SKSpriteNode }.first
+        let w = sprite?.size.width ?? maxW
+        let h = sprite?.size.height ?? (maxW * 0.5)
+
+        let left = max(18, safeInsets.left + 18)
+        let top = max(18, safeInsets.top + 18)
+
+        btn.position = CGPoint(
+            x: left + w * 0.5,
+            y: size.height - top - h * 0.5
         )
 
         btn.zPosition = 1500
@@ -307,16 +341,98 @@ final class GameScene: SKScene {
         tappedNodes.contains(where: { $0.name == name || $0.parent?.name == name })
     }
 
-    // MARK: - HUD
+    // MARK: HUD (Score + Timer with fullBamboo behind)
 
-    private func createScore() {
-        gameScore = SKLabelNode(fontNamed: "Chalkduster")
-        gameScore.text = "Score: 0"
-        gameScore.horizontalAlignmentMode = .left
-        gameScore.fontSize = 48
-        gameScore.position = CGPoint(x: 16, y: 16)
-        gameScore.zPosition = 100
-        addChild(gameScore)
+    private func createScoreHUD() {
+        scoreHud?.removeFromParent()
+
+        let container = SKNode()
+        container.zPosition = hudZ
+        addChild(container)
+        scoreHud = container
+
+        let bg = SKSpriteNode(imageNamed: buttonBambooImageName)
+        bg.name = "scoreHudBg"
+        bg.size = hudBambooSize
+        bg.zPosition = hudZ
+        bg.alpha = 0.95
+        container.addChild(bg)
+
+        let label = SKLabelNode(fontNamed: "Chalkduster")
+        label.text = "Score: 0"
+        label.fontSize = 30
+        label.fontColor = .white
+        label.verticalAlignmentMode = .center
+        label.horizontalAlignmentMode = .center
+        label.zPosition = hudTextZ
+        container.addChild(label)
+
+        gameScore = label
+        positionHUD()
+    }
+
+    private func createTimerHUD() {
+        timerHud?.removeFromParent()
+
+        let container = SKNode()
+        container.zPosition = hudZ
+        addChild(container)
+        timerHud = container
+
+        let bg = SKSpriteNode(imageNamed: buttonBambooImageName)
+        bg.name = "timerHudBg"
+        bg.size = hudBambooSize
+        bg.zPosition = hudZ
+        bg.alpha = 0.95
+        container.addChild(bg)
+
+        // shadow
+        let shadow = SKLabelNode(fontNamed: "Chalkduster")
+        shadow.text = ""
+        shadow.fontSize = 30
+        shadow.fontColor = UIColor(white: 0, alpha: 0.45)
+        shadow.verticalAlignmentMode = .center
+        shadow.horizontalAlignmentMode = .center
+        shadow.position = CGPoint(x: 1.5, y: -1.5)
+        shadow.zPosition = hudTextZ
+        container.addChild(shadow)
+
+        let label = SKLabelNode(fontNamed: "Chalkduster")
+        label.text = ""
+        label.fontSize = 34
+        label.fontColor = .white
+        label.verticalAlignmentMode = .center
+        label.horizontalAlignmentMode = .center
+        label.zPosition = hudTextZ + 1
+        container.addChild(label)
+
+        timerLabel = label
+
+        let dict = NSMutableDictionary()
+        dict["shadow"] = shadow
+        label.userData = dict
+
+        positionHUD()
+    }
+
+    private func positionHUD() {
+        let topPad = effectiveTopPadding()
+        let rightPad = effectiveRightPadding()
+
+        // Score: top center
+        if let scoreHud {
+            scoreHud.position = CGPoint(x: size.width * 0.5, y: size.height - topPad)
+        }
+
+        // Timer: top right
+        if let timerHud {
+            timerHud.position = CGPoint(x: size.width - rightPad - hudBambooSize.width * 0.10, y: size.height - topPad)
+        }
+    }
+
+    private func positionTopLabels() {
+        // Keep currentWordLabel centered, below the HUD if needed
+        currentWordLabel?.position = CGPoint(x: size.width / 2, y: size.height - effectiveTopPadding() - 80)
     }
 
     private func createSlices() {
@@ -342,44 +458,13 @@ final class GameScene: SKScene {
         label.fontColor = .white
         label.horizontalAlignmentMode = .center
         label.verticalAlignmentMode = .center
-        label.position = CGPoint(x: size.width / 2, y: size.height - effectiveTopPadding())
+        label.position = CGPoint(x: size.width / 2, y: size.height - effectiveTopPadding() - 80)
         label.zPosition = 100
         addChild(label)
         currentWordLabel = label
     }
 
-    private func createTimerLabel() {
-        let topPad = effectiveTopPadding()
-        let rightPad = effectiveRightPadding()
-
-        let shadow = SKLabelNode(fontNamed: "Chalkduster")
-        shadow.text = ""
-        shadow.fontSize = 36
-        shadow.fontColor = UIColor(white: 0, alpha: 0.5)
-        shadow.horizontalAlignmentMode = .right
-        shadow.verticalAlignmentMode = .center
-        shadow.position = CGPoint(x: size.width - rightPad + 1.5, y: size.height - topPad - 1.5)
-        shadow.zPosition = 99
-        addChild(shadow)
-
-        let label = SKLabelNode(fontNamed: "Chalkduster")
-        label.text = ""
-        label.fontSize = 36
-        label.fontColor = .white
-        label.horizontalAlignmentMode = .right
-        label.verticalAlignmentMode = .center
-        label.position = CGPoint(x: size.width - rightPad, y: size.height - topPad)
-        label.zPosition = 100
-        addChild(label)
-
-        timerLabel = label
-
-        let dict = NSMutableDictionary()
-        dict["shadow"] = shadow
-        label.userData = dict
-    }
-
-    // MARK: - Overlays
+    // MARK: Overlays
 
     private func setMenuButtonsFaded(_ faded: Bool) {
         guard let container = startMenuButtonsContainer else { return }
@@ -402,45 +487,27 @@ final class GameScene: SKScene {
         dim.position = CGPoint(x: size.width / 2, y: size.height / 2)
         overlay.addChild(dim)
 
-        // Top-left back on the main menu (exits Slice Mode)
-        addTopLeftBackButton(to: overlay, title: "Back", name: menuBackButtonName)
+        addTopLeftBackImageButton(to: overlay, name: menuBackButtonName)
 
-        let title = SKLabelNode(fontNamed: "Chalkduster")
-        title.text = "Word Ronin"
-        title.fontSize = 64
-        title.fontColor = .white
-        title.position = CGPoint(x: size.width / 2, y: size.height * 0.72)
-        overlay.addChild(title)
-
-        let subtitle = SKLabelNode(fontNamed: "Chalkduster")
-        subtitle.text = "Swipe letters to make words"
-        subtitle.fontSize = 22
-        subtitle.fontColor = UIColor(white: 1, alpha: 0.85)
-        subtitle.position = CGPoint(x: size.width / 2, y: size.height * 0.65)
-        overlay.addChild(subtitle)
-
-        // Buttons container (so we can fade them while tutorial overlay is up)
         startMenuButtonsContainer?.removeFromParent()
         let buttons = SKNode()
         buttons.zPosition = 1001
         overlay.addChild(buttons)
         startMenuButtonsContainer = buttons
 
-        let startBtn = makeBambooButton(
-            title: "Start Game",
+        let startBtn = makeImageButton(
+            imageName: startGameButtonImageName,
             name: "btn_start_game",
-            position: CGPoint(x: size.width / 2, y: size.height * 0.44),
-            size: CGSize(width: min(420, size.width * 0.52), height: 220),
-            fontSize: 32
+            position: CGPoint(x: size.width / 2, y: size.height * 0.65),
+            maxWidth: min(420, size.width * 0.62)
         )
         buttons.addChild(startBtn)
 
-        let howBtn = makeBambooButton(
-            title: "How to Play",
+        let howBtn = makeImageButton(
+            imageName: howToPlayButtonImageName,
             name: "btn_how_to_play",
-            position: CGPoint(x: size.width / 2, y: size.height * 0.28),
-            size: CGSize(width: min(320, size.width * 0.72), height: 180),
-            fontSize: 28
+            position: CGPoint(x: size.width / 2, y: size.height * 0.4),
+            maxWidth: min(320, size.width * 0.58)
         )
         buttons.addChild(howBtn)
 
@@ -449,8 +516,6 @@ final class GameScene: SKScene {
 
     private func showTutorialOverlay() {
         tutorialOverlay?.removeFromParent()
-
-        // Fade the menu buttons underneath
         setMenuButtonsFaded(true)
 
         let overlay = SKNode()
@@ -462,8 +527,7 @@ final class GameScene: SKScene {
         dim.position = CGPoint(x: size.width / 2, y: size.height / 2)
         overlay.addChild(dim)
 
-        // ONLY tutorial back button (unique name)
-        addTopLeftBackButton(to: overlay, title: "Back", name: tutorialBackButtonName)
+        addTopLeftBackImageButton(to: overlay, name: tutorialBackButtonName)
 
         let title = SKLabelNode(fontNamed: "Chalkduster")
         title.text = "How to Play"
@@ -479,7 +543,6 @@ final class GameScene: SKScene {
         subtitle.position = CGPoint(x: size.width / 2, y: size.height * 0.73)
         overlay.addChild(subtitle)
 
-        // NEW: rules text (your request)
         let rules = SKLabelNode(fontNamed: "Chalkduster")
         rules.text = "Goal: make as many words as you can. Try to solve the full word (use all letters) for the max bonus."
         rules.fontSize = 20
@@ -696,7 +759,7 @@ final class GameScene: SKScene {
         setMenuButtonsFaded(false)
     }
 
-    // MARK: - Game Start
+    // MARK: Game Start
 
     private func beginGame() {
         startOverlay?.removeFromParent()
@@ -767,7 +830,7 @@ final class GameScene: SKScene {
         let leftInset: CGFloat = max(30, safeInsets.left + 24)
         let rightInset: CGFloat = max(30, safeInsets.right + 24)
         let bottomInset: CGFloat = 120
-        let topInset: CGFloat = max(220, safeInsets.top + 220)
+        let topInset: CGFloat = max(260, safeInsets.top + 260) // extra room for HUD
 
         let playableRect = CGRect(
             x: leftInset + letterSize.width * 0.6,
@@ -828,7 +891,7 @@ final class GameScene: SKScene {
         for node in letterNodes { node.alpha = 1.0 }
     }
 
-    // MARK: - Touches
+    // MARK: Touches
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
@@ -836,7 +899,6 @@ final class GameScene: SKScene {
         let location = touch.location(in: self)
         let tappedNodes = nodes(at: location)
 
-        // Tutorial: ONLY its own back button works
         if tutorialOverlay != nil {
             if tapped(tappedNodes, matches: tutorialBackButtonName) {
                 hideTutorialOverlay()
@@ -844,7 +906,6 @@ final class GameScene: SKScene {
             return
         }
 
-        // Menu
         if !gameStarted {
             if tapped(tappedNodes, matches: menuBackButtonName) {
                 NotificationCenter.default.post(name: .exitSliceMode, object: nil)
@@ -864,7 +925,6 @@ final class GameScene: SKScene {
             return
         }
 
-        // Gameplay back button
         if tapped(tappedNodes, matches: inGameBackButtonName) {
             restartGame()
             return
@@ -945,7 +1005,7 @@ final class GameScene: SKScene {
         touchesEnded(touches, with: event)
     }
 
-    // MARK: - Word UI
+    // MARK: Word UI
 
     private func clearSelectionUIAndState() {
         for idx in selectedIndices { unmarkLetter(at: idx) }
@@ -987,7 +1047,7 @@ final class GameScene: SKScene {
         return String(chars)
     }
 
-    // MARK: - Timer
+    // MARK: Timer
 
     private func startRoundTimer(seconds: Int) {
         roundTimer?.invalidate()
@@ -1030,7 +1090,7 @@ final class GameScene: SKScene {
         endGame()
     }
 
-    // MARK: - Scoring / Validation
+    // MARK: Scoring / Validation
 
     private func pointsForWord(length: Int) -> Int {
         let perLetter = 50
@@ -1138,7 +1198,7 @@ final class GameScene: SKScene {
         )
     }
 
-    // MARK: - Game Over
+    // MARK: Game Over
 
     private func endGame() {
         if gameEnded { return }
@@ -1262,11 +1322,10 @@ final class GameScene: SKScene {
         activeSliceFG.alpha = 0
 
         hideInGameBackButton()
-
         showStartOverlay()
     }
 
-    // MARK: - Slice Drawing
+    // MARK: Slice Drawing
 
     private func redrawActiveSlice() {
         guard activeSlicePoints.count >= 2 else {
@@ -1289,7 +1348,7 @@ final class GameScene: SKScene {
         activeSliceFG.path = path.cgPath
     }
 
-    // MARK: - Positioning
+    // MARK: Positioning
 
     private func randomNonOverlappingPositions(count: Int, in rect: CGRect, minDistance: CGFloat) -> [CGPoint] {
         var points: [CGPoint] = []
