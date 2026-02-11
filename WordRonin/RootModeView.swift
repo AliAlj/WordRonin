@@ -32,15 +32,13 @@ private struct ModeSelectView: View {
                 Image("gameBackground")
                     .resizable()
                     .scaledToFill()
-                    .frame(width: geo.size.width, height: geo.size.height)
-                    .clipped()
                     .ignoresSafeArea()
-
+                  
                 ModeIconButton(imageName: "slicemodebutton", onTap: { onSelect(.slice) })
-                    .position(x: geo.size.width * 0.25, y: geo.size.height * 0.45)
+                    .position(x: geo.size.width * 0.27, y: geo.size.height * 0.45)
 
                 ModeIconButton(imageName: "listenmodebutton", onTap: { onSelect(.listening) })
-                    .position(x: geo.size.width * 0.76, y: geo.size.height * 0.45)
+                    .position(x: geo.size.width * 0.8, y: geo.size.height * 0.45)
             }
         }
         .onAppear {
@@ -65,4 +63,8 @@ private struct ModeIconButton: View {
         }
         .buttonStyle(.plain)
     }
+}
+
+#Preview("Root Mode – Landscape", traits: .landscapeLeft) {
+    RootModeView()
 }

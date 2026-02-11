@@ -17,12 +17,31 @@ enum SequenceType: CaseIterable {
 }
 
 final class GameScene: SKScene {
+    private func debugPrintNarutoFonts() {
+        for family in UIFont.familyNames.sorted() {
+            let names = UIFont.fontNames(forFamilyName: family)
+            if names.contains(where: { $0.lowercased().contains("njn") || $0.lowercased().contains("naruto") }) {
+                print("Family:", family, "Fonts:", names)
+            }
+        }
+
+        let allFonts = UIFont.familyNames
+            .flatMap { UIFont.fontNames(forFamilyName: $0) }
+            .sorted()
+
+        let matches = allFonts.filter {
+            $0.lowercased().contains("naruto") || $0.lowercased().contains("njn")
+        }
+
+        print("Matches:", matches)
+    }
+
 
     private let roundDurationSeconds = 60
 
     // Assets
     private let bambooImageName = "bamboo_slice"         // letter tile bamboo
-    private let buttonBambooImageName = "fullBamboo"     // shared bamboo asset
+    private let buttonBambooImageName = "fullbamboo"     // shared bamboo asset
     private let inGameBackgroundName = "sliceBackground" // in-game background (slice + listen)
     private let menuBackgroundName = "gameBackground"    // lobby/menu background
     private let backButtonImageName = "backbutton"
@@ -35,6 +54,10 @@ final class GameScene: SKScene {
     private let menuBackButtonName = "btn_menu_back"
     private let tutorialBackButtonName = "btn_tutorial_back"
     private let inGameBackButtonName = "btn_ingame_back"
+    
+    // Popup names
+    private let startPopupName = "start_popup"
+    private let startPopupPanelName = "start_popup_panel"
 
     private var inGameBackButton: SKNode?
 
@@ -134,6 +157,8 @@ final class GameScene: SKScene {
     ]
 
     override func didMove(to view: SKView) {
+        printAllFontsToConsole()
+
         if #available(iOS 11.0, *) {
             safeInsets = view.safeAreaInsets
         } else {
@@ -300,6 +325,13 @@ final class GameScene: SKScene {
         container.addChild(sprite)
 
         return container
+    }
+
+    private func printAllFontsToConsole() {
+        for family in UIFont.familyNames.sorted() {
+            let names = UIFont.fontNames(forFamilyName: family).sorted()
+            print("Family: \(family) -> \(names)")
+        }
     }
 
     private func addTopLeftBackImageButton(to parent: SKNode, name: String) {
@@ -476,10 +508,7 @@ final class GameScene: SKScene {
         startOverlay?.removeFromParent()
         hideInGameBackButton()
 
-        // Stop slice music while in the slice scene menu overlay
         AudioManager.shared.stopMusic()
-
-        // Stop clock ticking (in case you came back mid-tick)
         stopClockTick()
 
         let overlay = SKNode()
@@ -487,33 +516,86 @@ final class GameScene: SKScene {
         addChild(overlay)
         startOverlay = overlay
 
+        // Dim background
         let dim = SKSpriteNode(color: UIColor(white: 0, alpha: 0.55), size: size)
         dim.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        dim.zPosition = 0
         overlay.addChild(dim)
 
+        // Back button stays top-left (outside popup)
         addTopLeftBackImageButton(to: overlay, name: menuBackButtonName)
 
+        // Popup container
+        let popup = SKNode()
+        popup.name = startPopupName
+        popup.zPosition = 10
+        popup.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        overlay.addChild(popup)
+
+        // Panel background (simple rounded rect)
+        let panelW = min(size.width * 0.78, 720)
+        let panelH = min(size.height * 0.55, 520)
+
+        let panelPath = UIBezierPath(
+            roundedRect: CGRect(x: -panelW/2, y: -panelH/2, width: panelW, height: panelH),
+            cornerRadius: 28
+        )
+
+        let panel = SKShapeNode(path: panelPath.cgPath)
+        panel.name = startPopupPanelName
+        panel.fillColor = UIColor(white: 0.05, alpha: 0.75)
+        panel.strokeColor = UIColor(white: 1.0, alpha: 0.12)
+        panel.lineWidth = 2
+        panel.zPosition = 0
+        popup.addChild(panel)
+
+        // Optional soft shadow behind panel (looks more like a popup)
+        let shadow = SKShapeNode(path: panelPath.cgPath)
+        shadow.fillColor = UIColor(white: 0.0, alpha: 0.35)
+        shadow.strokeColor = .clear
+        shadow.position = CGPoint(x: 0, y: -10)
+        shadow.zPosition = -1
+        popup.addChild(shadow)
+
+        // Title inside popup
+        let title = SKLabelNode(fontNamed: "NJNaruto-Regular")
+        title.text = "Slice Mode"
+        title.fontSize = 54
+        title.fontColor = .white
+        title.position = CGPoint(x: 0, y: panelH * 0.28)
+        title.zPosition = 1
+        popup.addChild(title)
+
+        // Buttons inside popup (same names so your touchesBegan logic still works)
         startMenuButtonsContainer?.removeFromParent()
         let buttons = SKNode()
-        buttons.zPosition = 1001
-        overlay.addChild(buttons)
+        buttons.zPosition = 2
+        popup.addChild(buttons)
         startMenuButtonsContainer = buttons
 
         let startBtn = makeImageButton(
             imageName: startGameButtonImageName,
             name: "btn_start_game",
-            position: CGPoint(x: size.width / 2, y: size.height * 0.65),
-            maxWidth: min(420, size.width * 0.62)
+            position: CGPoint(x: 0, y: 20),
+            maxWidth: min(460, panelW * 0.78)
         )
         buttons.addChild(startBtn)
 
         let howBtn = makeImageButton(
             imageName: howToPlayButtonImageName,
             name: "btn_how_to_play",
-            position: CGPoint(x: size.width / 2, y: size.height * 0.4),
-            maxWidth: min(320, size.width * 0.58)
+            position: CGPoint(x: 0, y: -panelH * 0.22),
+            maxWidth: min(360, panelW * 0.70)
         )
         buttons.addChild(howBtn)
+
+        // Popup animation (subtle)
+        popup.setScale(0.92)
+        popup.alpha = 0
+        popup.run(SKAction.group([
+            SKAction.fadeIn(withDuration: 0.14),
+            SKAction.scale(to: 1.0, duration: 0.14)
+        ]))
 
         setMenuButtonsFaded(false)
     }

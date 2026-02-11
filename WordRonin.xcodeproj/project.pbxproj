@@ -61,6 +61,7 @@
 				correct.caf,
 				hit_tick.caf,
 				menusong.caf,
+				njnaruto.otf,
 				slicesong.mp3,
 				wrong.caf,
 			);
@@ -73,6 +74,7 @@
 				correct.caf,
 				hit_tick.caf,
 				menusong.caf,
+				njnaruto.otf,
 				slicesong.mp3,
 				wrong.caf,
 			);
@@ -85,7 +87,9 @@
 				clock.caf,
 				correct.caf,
 				hit_tick.caf,
+				Info.plist,
 				menusong.caf,
+				njnaruto.otf,
 				slicesong.mp3,
 				wrong.caf,
 			);
@@ -98,6 +102,7 @@
 				correct.caf,
 				hit_tick.caf,
 				menusong.caf,
+				njnaruto.otf,
 				slicesong.mp3,
 				wrong.caf,
 			);
@@ -110,10 +115,18 @@
 				correct.caf,
 				hit_tick.caf,
 				menusong.caf,
+				njnaruto.otf,
 				slicesong.mp3,
 				wrong.caf,
 			);
 			target = D6C1FEAE2F3292280023718F /* WordRoninUITests */;
+		};
+		D6098D332F3D0C14003BC2B9 /* Exceptions for "WordRonin" folder in "slicenspell" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D61FA2E92F28894B00D21213 /* slicenspell */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -121,6 +134,7 @@
 		D61FA2EC2F28894B00D21213 /* WordRonin */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				D6098D332F3D0C14003BC2B9 /* Exceptions for "WordRonin" folder in "slicenspell" target */,
 				D6098C982F3BCD19003BC2B9 /* Exceptions for "WordRonin" folder in "slicenspellTests" target */,
 				D6098C992F3BCD19003BC2B9 /* Exceptions for "WordRonin" folder in "slicenspellUITests" target */,
 				D6098C9A2F3BCD19003BC2B9 /* Exceptions for "WordRonin" folder in "WordRonin" target */,
