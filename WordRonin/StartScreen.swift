@@ -39,3 +39,10 @@ struct StartScreen: View {
         }
     }
 }
+
+#Preview("Start Screen") {
+    StartScreen(
+        onPickSlice: { print("Slice tapped") },
+        onPickListening: { print("Listening tapped") }
+    )
+}
