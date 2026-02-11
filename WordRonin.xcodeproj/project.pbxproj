@@ -57,40 +57,61 @@
 		D6098C982F3BCD19003BC2B9 /* Exceptions for "WordRonin" folder in "slicenspellTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				menusong.mp3,
+				clock.caf,
+				correct.caf,
+				hit_tick.caf,
+				menusong.caf,
 				slicesong.mp3,
+				wrong.caf,
 			);
 			target = D61FA3022F28894C00D21213 /* slicenspellTests */;
 		};
 		D6098C992F3BCD19003BC2B9 /* Exceptions for "WordRonin" folder in "slicenspellUITests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				menusong.mp3,
+				clock.caf,
+				correct.caf,
+				hit_tick.caf,
+				menusong.caf,
 				slicesong.mp3,
+				wrong.caf,
 			);
 			target = D61FA30C2F28894C00D21213 /* slicenspellUITests */;
 		};
 		D6098C9A2F3BCD19003BC2B9 /* Exceptions for "WordRonin" folder in "WordRonin" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				menusong.mp3,
+				AudioManager.swift,
+				clock.caf,
+				correct.caf,
+				hit_tick.caf,
+				menusong.caf,
 				slicesong.mp3,
+				wrong.caf,
 			);
 			target = D6C1FE8E2F3292270023718F /* WordRonin */;
 		};
 		D6098C9B2F3BCD19003BC2B9 /* Exceptions for "WordRonin" folder in "WordRoninTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				menusong.mp3,
+				clock.caf,
+				correct.caf,
+				hit_tick.caf,
+				menusong.caf,
 				slicesong.mp3,
+				wrong.caf,
 			);
 			target = D6C1FEA42F3292270023718F /* WordRoninTests */;
 		};
 		D6098C9C2F3BCD19003BC2B9 /* Exceptions for "WordRonin" folder in "WordRoninUITests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				menusong.mp3,
+				clock.caf,
+				correct.caf,
+				hit_tick.caf,
+				menusong.caf,
 				slicesong.mp3,
+				wrong.caf,
 			);
 			target = D6C1FEAE2F3292280023718F /* WordRoninUITests */;
 		};

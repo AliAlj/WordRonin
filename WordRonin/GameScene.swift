@@ -68,10 +68,10 @@ final class GameScene: SKScene {
 
     private var gameStarted = false
     private var startOverlay: SKNode?
-
     private var tutorialOverlay: SKNode?
 
     private var safeInsets: UIEdgeInsets = .zero
+
     private func effectiveRightPadding() -> CGFloat { max(24, safeInsets.right + 120) }
     private func effectiveTopPadding() -> CGFloat { max(32, safeInsets.top + 32) }
 
@@ -86,6 +86,12 @@ final class GameScene: SKScene {
     private let hudBambooSize = CGSize(width: 300, height: 215)
     private let hudZ: CGFloat = 120
     private let hudTextZ: CGFloat = 122
+
+    // Audio files (change extensions to match your real files)
+    private let musicSliceFile = "slicesong.mp3"
+    private let sfxHitFile = "hit_tick.caf"
+    private let sfxCorrectFile = "correct.caf"
+    private let sfxWrongFile = "wrong.caf"
 
     private let demoDictionary: Set<String> = [
         // ORANGE
@@ -150,11 +156,13 @@ final class GameScene: SKScene {
 
         hideInGameBackButton()
         showStartOverlay()
+
+        // Stop any slice music when landing on this scene menu
+        AudioManager.shared.stopMusic()
     }
 
     override func didChangeSize(_ oldSize: CGSize) {
         super.didChangeSize(oldSize)
-
         resizeBackground()
 
         if let startOverlay = startOverlay {
@@ -162,13 +170,11 @@ final class GameScene: SKScene {
             self.startOverlay = nil
             showStartOverlay()
         }
-
         if let tutorialOverlay = tutorialOverlay {
             tutorialOverlay.removeFromParent()
             self.tutorialOverlay = nil
             showTutorialOverlay()
         }
-
         if let gameOverOverlay = gameOverOverlay {
             gameOverOverlay.removeFromParent()
             self.gameOverOverlay = nil
@@ -184,7 +190,6 @@ final class GameScene: SKScene {
     }
 
     // MARK: Background
-
     private func ensureBackground(named imageName: String) {
         if let bg = childNode(withName: "//\(backgroundNodeName)") as? SKSpriteNode {
             bg.texture = SKTexture(imageNamed: imageName)
@@ -221,7 +226,6 @@ final class GameScene: SKScene {
     private func setInGameBackground() { ensureBackground(named: inGameBackgroundName) }
 
     // MARK: UI Helpers
-
     private func makeBambooButton(
         title: String,
         name: String,
@@ -268,30 +272,25 @@ final class GameScene: SKScene {
         let sprite = SKSpriteNode(imageNamed: imageName)
         sprite.name = name
         sprite.zPosition = 0
-
         let texSize = sprite.texture?.size() ?? CGSize(width: 1, height: 1)
         let scale = maxWidth / max(1, texSize.width)
         sprite.setScale(scale)
-
         container.addChild(sprite)
+
         return container
     }
 
-    // FIXED: positions by center using the image’s scaled size
     private func addTopLeftBackImageButton(to parent: SKNode, name: String) {
         let maxW = min(220, size.width * 0.12)
-
         let btn = makeImageButton(
             imageName: backButtonImageName,
             name: name,
             position: .zero,
             maxWidth: maxW
         )
-
         let sprite = btn.children.compactMap { $0 as? SKSpriteNode }.first
         let w = sprite?.size.width ?? maxW
         let h = sprite?.size.height ?? (maxW * 0.5)
-
         let left = max(18, safeInsets.left + 18)
         let top = max(18, safeInsets.top + 18)
 
@@ -299,26 +298,21 @@ final class GameScene: SKScene {
             x: left + w * 0.5,
             y: size.height - top - h * 0.5
         )
-
         parent.addChild(btn)
     }
 
     private func showInGameBackButton() {
         inGameBackButton?.removeFromParent()
-
         let maxW = min(220, size.width * 0.12)
-
         let btn = makeImageButton(
             imageName: backButtonImageName,
             name: inGameBackButtonName,
             position: .zero,
             maxWidth: maxW
         )
-
         let sprite = btn.children.compactMap { $0 as? SKSpriteNode }.first
         let w = sprite?.size.width ?? maxW
         let h = sprite?.size.height ?? (maxW * 0.5)
-
         let left = max(18, safeInsets.left + 18)
         let top = max(18, safeInsets.top + 18)
 
@@ -326,7 +320,6 @@ final class GameScene: SKScene {
             x: left + w * 0.5,
             y: size.height - top - h * 0.5
         )
-
         btn.zPosition = 1500
         addChild(btn)
         inGameBackButton = btn
@@ -341,11 +334,9 @@ final class GameScene: SKScene {
         tappedNodes.contains(where: { $0.name == name || $0.parent?.name == name })
     }
 
-    // MARK: HUD (Score + Timer with fullBamboo behind)
-
+    // MARK: HUD
     private func createScoreHUD() {
         scoreHud?.removeFromParent()
-
         let container = SKNode()
         container.zPosition = hudZ
         addChild(container)
@@ -373,7 +364,6 @@ final class GameScene: SKScene {
 
     private func createTimerHUD() {
         timerHud?.removeFromParent()
-
         let container = SKNode()
         container.zPosition = hudZ
         addChild(container)
@@ -386,20 +376,9 @@ final class GameScene: SKScene {
         bg.alpha = 0.95
         container.addChild(bg)
 
-        // shadow
-        let shadow = SKLabelNode(fontNamed: "Chalkduster")
-        shadow.text = ""
-        shadow.fontSize = 30
-        shadow.fontColor = UIColor(white: 0, alpha: 0.45)
-        shadow.verticalAlignmentMode = .center
-        shadow.horizontalAlignmentMode = .center
-        shadow.position = CGPoint(x: 1.5, y: -1.5)
-        shadow.zPosition = hudTextZ
-        container.addChild(shadow)
-
         let label = SKLabelNode(fontNamed: "Chalkduster")
         label.text = ""
-        label.fontSize = 34
+        label.fontSize = 30
         label.fontColor = .white
         label.verticalAlignmentMode = .center
         label.horizontalAlignmentMode = .center
@@ -409,7 +388,6 @@ final class GameScene: SKScene {
         timerLabel = label
 
         let dict = NSMutableDictionary()
-        dict["shadow"] = shadow
         label.userData = dict
 
         positionHUD()
@@ -419,19 +397,19 @@ final class GameScene: SKScene {
         let topPad = effectiveTopPadding()
         let rightPad = effectiveRightPadding()
 
-        // Score: top center
         if let scoreHud {
             scoreHud.position = CGPoint(x: size.width * 0.5, y: size.height - topPad)
         }
 
-        // Timer: top right
         if let timerHud {
-            timerHud.position = CGPoint(x: size.width - rightPad - hudBambooSize.width * 0.10, y: size.height - topPad)
+            timerHud.position = CGPoint(
+                x: size.width - rightPad - hudBambooSize.width * 0.10,
+                y: size.height - topPad
+            )
         }
     }
 
     private func positionTopLabels() {
-        // Keep currentWordLabel centered, below the HUD if needed
         currentWordLabel?.position = CGPoint(x: size.width / 2, y: size.height - effectiveTopPadding() - 80)
     }
 
@@ -465,7 +443,6 @@ final class GameScene: SKScene {
     }
 
     // MARK: Overlays
-
     private func setMenuButtonsFaded(_ faded: Bool) {
         guard let container = startMenuButtonsContainer else { return }
         let target: CGFloat = faded ? 0.18 : 1.0
@@ -474,9 +451,11 @@ final class GameScene: SKScene {
 
     private func showStartOverlay() {
         setMenuBackground()
-
         startOverlay?.removeFromParent()
         hideInGameBackButton()
+
+        // Stop slice music while in the slice scene menu overlay
+        AudioManager.shared.stopMusic()
 
         let overlay = SKNode()
         overlay.zPosition = 999
@@ -644,6 +623,7 @@ final class GameScene: SKScene {
                 SKAction.scale(to: 1.00, duration: 0.10)
             ])
             node.run(pulse)
+
             for child in node.children {
                 if let label = child as? SKLabelNode, label.name == "demo_letter_label" {
                     label.fontColor = .yellow
@@ -680,6 +660,7 @@ final class GameScene: SKScene {
         let draw = SKAction.repeat(SKAction.sequence([
             SKAction.run {
                 if allPoints.isEmpty { return }
+
                 let t = (dot.userData?["t"] as? Int) ?? 0
                 let nextT = t + 1
                 dot.userData = dot.userData ?? NSMutableDictionary()
@@ -698,7 +679,6 @@ final class GameScene: SKScene {
                 let x = a.x + CGFloat(local) * (b.x - a.x)
                 let y = a.y + CGFloat(local) * (b.y - a.y)
                 let current = CGPoint(x: x, y: y)
-
                 dot.position = current
 
                 var pathPoints: [CGPoint] = []
@@ -760,7 +740,6 @@ final class GameScene: SKScene {
     }
 
     // MARK: Game Start
-
     private func beginGame() {
         startOverlay?.removeFromParent()
         startOverlay = nil
@@ -769,11 +748,14 @@ final class GameScene: SKScene {
         setInGameBackground()
         showInGameBackButton()
 
+        // Start slice mode music when gameplay starts
+        AudioManager.shared.playMusic(fileName: musicSliceFile, volume: 0.15)
+
         gameStarted = true
         gameEnded = false
         roundActive = false
-
         score = 0
+
         foundWords.removeAll()
         possibleWords.removeAll()
         selectedIndices.removeAll()
@@ -810,7 +792,6 @@ final class GameScene: SKScene {
 
         baseLetters = Array(chosen.uppercased())
         baseLetters.shuffle()
-
         possibleWords = generatePossibleWords(from: baseLetters, minLength: 3)
         foundWords.removeAll()
 
@@ -830,7 +811,7 @@ final class GameScene: SKScene {
         let leftInset: CGFloat = max(30, safeInsets.left + 24)
         let rightInset: CGFloat = max(30, safeInsets.right + 24)
         let bottomInset: CGFloat = 120
-        let topInset: CGFloat = max(260, safeInsets.top + 260) // extra room for HUD
+        let topInset: CGFloat = max(260, safeInsets.top + 260)
 
         let playableRect = CGRect(
             x: leftInset + letterSize.width * 0.6,
@@ -892,7 +873,6 @@ final class GameScene: SKScene {
     }
 
     // MARK: Touches
-
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         guard let touch = touches.first else { return }
@@ -908,20 +888,18 @@ final class GameScene: SKScene {
 
         if !gameStarted {
             if tapped(tappedNodes, matches: menuBackButtonName) {
+                AudioManager.shared.stopMusic()
                 NotificationCenter.default.post(name: .exitSliceMode, object: nil)
                 return
             }
-
             if tapped(tappedNodes, matches: "btn_how_to_play") {
                 showTutorialOverlay()
                 return
             }
-
             if tapped(tappedNodes, matches: "btn_start_game") {
                 beginGame()
                 return
             }
-
             return
         }
 
@@ -950,9 +928,12 @@ final class GameScene: SKScene {
                nodeName.hasPrefix("letter_"),
                let indexStr = nodeName.split(separator: "_").last,
                let index = Int(indexStr) {
+
                 selectedIndices.append(index)
                 markLetterSelected(at: index)
                 updateCurrentWordLabel()
+
+                run(SKAction.playSoundFileNamed(sfxHitFile, waitForCompletion: false))
                 break
             }
         }
@@ -961,11 +942,10 @@ final class GameScene: SKScene {
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if gameEnded || !roundActive { return }
         guard let touch = touches.first else { return }
-
         let location = touch.location(in: self)
+
         activeSlicePoints.append(location)
         redrawActiveSlice()
-
         activeSliceBG.alpha = 1
         activeSliceFG.alpha = 1
 
@@ -974,10 +954,13 @@ final class GameScene: SKScene {
                nodeName.hasPrefix("letter_"),
                let idxStr = nodeName.split(separator: "_").last,
                let idx = Int(idxStr) {
+
                 if !selectedIndices.contains(idx) {
                     selectedIndices.append(idx)
                     markLetterSelected(at: idx)
                     updateCurrentWordLabel()
+
+                    run(SKAction.playSoundFileNamed(sfxHitFile, waitForCompletion: false))
                 }
                 break
             }
@@ -996,7 +979,6 @@ final class GameScene: SKScene {
 
         let candidate = buildSelectedWord()
         let usedIndices = selectedIndices
-
         clearSelectionUIAndState()
         validate(candidate: candidate, usedIndices: usedIndices)
     }
@@ -1006,7 +988,6 @@ final class GameScene: SKScene {
     }
 
     // MARK: Word UI
-
     private func clearSelectionUIAndState() {
         for idx in selectedIndices { unmarkLetter(at: idx) }
         selectedIndices.removeAll()
@@ -1048,7 +1029,6 @@ final class GameScene: SKScene {
     }
 
     // MARK: Timer
-
     private func startRoundTimer(seconds: Int) {
         roundTimer?.invalidate()
         timeRemaining = seconds
@@ -1058,7 +1038,6 @@ final class GameScene: SKScene {
             guard let self else { return }
             self.timeRemaining -= 1
             self.updateTimerLabel()
-
             if self.timeRemaining <= 0 {
                 t.invalidate()
                 self.roundTimer = nil
@@ -1080,10 +1059,9 @@ final class GameScene: SKScene {
 
     private func roundTimeUp() {
         roundActive = false
-        run(SKAction.playSoundFileNamed("wrong.caf", waitForCompletion: false))
+        run(SKAction.playSoundFileNamed(sfxWrongFile, waitForCompletion: false))
 
         for node in letterNodes { node.run(SKAction.fadeAlpha(to: 0.5, duration: 0.2)) }
-
         physicsWorld.gravity = CGVector(dx: 0, dy: -6)
         for node in letterNodes { node.physicsBody?.isDynamic = true }
 
@@ -1091,11 +1069,9 @@ final class GameScene: SKScene {
     }
 
     // MARK: Scoring / Validation
-
     private func pointsForWord(length: Int) -> Int {
         let perLetter = 50
         let base = perLetter * length
-
         let bonus: Int
         switch length {
         case 0...3: bonus = 0
@@ -1103,7 +1079,6 @@ final class GameScene: SKScene {
         case 5: bonus = 150
         default: bonus = 300
         }
-
         return base + bonus
     }
 
@@ -1126,15 +1101,13 @@ final class GameScene: SKScene {
         }
 
         foundWords.insert(upper)
-
         let gained = pointsForWord(length: upper.count)
         score += gained
-
         feedbackCorrect(indices: usedIndices)
     }
 
     private func feedbackCorrect(indices: [Int]) {
-        run(SKAction.playSoundFileNamed("whack.caf", waitForCompletion: false))
+        run(SKAction.playSoundFileNamed(sfxCorrectFile, waitForCompletion: false))
 
         let pulse = SKAction.sequence([
             SKAction.scale(to: 1.35, duration: 0.08),
@@ -1155,7 +1128,7 @@ final class GameScene: SKScene {
     }
 
     private func feedbackIncorrect(indices: [Int], alreadyFound: Bool = false) {
-        run(SKAction.playSoundFileNamed("wrong.caf", waitForCompletion: false))
+        run(SKAction.playSoundFileNamed(sfxWrongFile, waitForCompletion: false))
 
         let shake = SKAction.sequence([
             .moveBy(x: -6, y: 0, duration: 0.05),
@@ -1199,18 +1172,13 @@ final class GameScene: SKScene {
     }
 
     // MARK: Game Over
-
     private func endGame() {
         if gameEnded { return }
-
         gameEnded = true
         roundActive = false
-
         roundTimer?.invalidate()
         roundTimer = nil
-
         physicsWorld.speed = 0
-
         showGameOverOverlay()
     }
 
@@ -1223,7 +1191,6 @@ final class GameScene: SKScene {
 
     private func showGameOverOverlay() {
         gameOverOverlay?.removeFromParent()
-
         let overlay = SKNode()
         overlay.zPosition = 1000
         addChild(overlay)
@@ -1298,6 +1265,9 @@ final class GameScene: SKScene {
         physicsWorld.speed = 0.85
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
 
+        // Stop slice music when going back to the scene menu overlay
+        AudioManager.shared.stopMusic()
+
         gameEnded = false
         gameStarted = false
         roundActive = false
@@ -1326,7 +1296,6 @@ final class GameScene: SKScene {
     }
 
     // MARK: Slice Drawing
-
     private func redrawActiveSlice() {
         guard activeSlicePoints.count >= 2 else {
             activeSliceBG.path = nil
@@ -1349,7 +1318,6 @@ final class GameScene: SKScene {
     }
 
     // MARK: Positioning
-
     private func randomNonOverlappingPositions(count: Int, in rect: CGRect, minDistance: CGFloat) -> [CGPoint] {
         var points: [CGPoint] = []
         points.reserveCapacity(count)
@@ -1367,7 +1335,6 @@ final class GameScene: SKScene {
         while points.count < count && attempts < maxAttempts {
             attempts += 1
             let p = randPoint()
-
             var ok = true
             for q in points {
                 let dx = p.x - q.x
@@ -1377,7 +1344,6 @@ final class GameScene: SKScene {
                     break
                 }
             }
-
             if ok { points.append(p) }
         }
 
@@ -1388,18 +1354,15 @@ final class GameScene: SKScene {
             let cellH = rect.height / CGFloat(rows)
 
             points.removeAll(keepingCapacity: true)
-
             var idx = 0
             for r in 0..<rows {
                 for c in 0..<cols {
                     if idx >= count { break }
                     idx += 1
-
                     let cx = rect.minX + cellW * (CGFloat(c) + 0.5)
                     let cy = rect.minY + cellH * (CGFloat(r) + 0.5)
                     let jitterX = CGFloat.random(in: -cellW * 0.18...cellW * 0.18)
                     let jitterY = CGFloat.random(in: -cellH * 0.18...cellH * 0.18)
-
                     points.append(CGPoint(x: cx + jitterX, y: cy + jitterY))
                 }
             }
