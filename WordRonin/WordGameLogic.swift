@@ -5,7 +5,6 @@
 //  Created by Jad Aoun on 2/11/26.
 //
 
-
 import Foundation
 
 struct WordGameLogic {
@@ -48,38 +47,17 @@ struct WordGameLogic {
     }
 
     private static let dictionary: Set<String> = [
-        // ORANGE
-        "ORANGE",
-        "ANGER","ARGON","ORGAN","GROAN","RANGE",
+        "ORANGE", "ANGER","ARGON","ORGAN","GROAN","RANGE",
         "RANG","RAGE","OGRE","ERGO","AERO","AEON","GORE","GEAR","GONE","EARN","NEAR",
         "ORE","ROE","OAR","AGO","NAG","NOR","EON","EGO","RAN","RAG","AGE","EAR","ERA","ARE","ONE",
-
-        // PLANET
-        "PLANET",
-        "PLANE","PANEL","PETAL","PLATE","LEAPT","PALET","PENAL", "PLANT", "LEANT",
+        "PLANET", "PLANE","PANEL","PETAL","PLATE","LEAPT","PALET","PENAL", "PLANT", "LEANT",
         "PLEA","PEAL","PALE","LEAP","PELT","LENT","LATE","LEAN","NEAT","TAPE","PATE","PEAT", "TEAL",
         "PAN","PEN","NET","TEN","ANT","TAN","NAP","PAL","LAT","LET","ALE","LEA","APE","EAT","TEA","ATE","TAP","PAT","PET",
-
-        // STREAM
-        "STREAM","MASTER","TAMERS",
-        "SMEAR","STARE","TEARS","RATES","TAMES","TEAMS","SMART",
+        "STREAM","MASTER","TAMERS","SMEAR","STARE","TEARS","RATES","TAMES","TEAMS","SMART",
         "SAME","SEAM","TEAM","MATE","MEAT","TAME","EAST","SEAT","RATE","STAR","EARS","TEAR",
         "ARM","RAM","TAR","RAT","ART","MET","SET","SEA","EAT","ATE","TEA",
-
-        // CAMERA
-        "CAMERA","CREAM",
-        "ACRE","CARE","RACE","MARE","AREA",
-        "ARC","CAR","ARM","RAM","ERA","ARE","ACE",
-
-        // POCKET
-        "POCKET",
-        "POKE","POET","COKE","TOKE","POCK","TOCK","PECK","COPE","COTE",
-        "PET","POT","TOP","COP","TOE","ECO",
-
-        // APRICOT
-        "APRICOT",
-        "TOPIC","PATIO","OPTIC","CAPRI",
-        "PAIR","TRAP","PORT","PART","TARP",
-        "RIP","TIP","PIT","ART","RAT","TAR","TAP","PAT","COP","CAP","CAR","ARC","RAP","PAR","PRO"
+        "CAMERA","CREAM","ACRE","CARE","RACE","MARE","AREA","ARC","CAR","ARM","RAM","ERA","ARE","ACE",
+        "POCKET","POKE","POET","COKE","TOKE","POCK","TOCK","PECK","COPE","COTE","PET","POT","TOP","COP","TOE","ECO",
+        "APRICOT","TOPIC","PATIO","OPTIC","CAPRI","PAIR","TRAP","PORT","PART","TARP","RIP","TIP","PIT","ART","RAT","TAR","TAP","PAT","COP","CAP","CAR","ARC","RAP","PAR","PRO"
     ]
 }

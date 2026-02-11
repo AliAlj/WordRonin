@@ -35,7 +35,7 @@ extension GameScene {
         dim.zPosition = 0
         overlay.addChild(dim)
 
-        // Back button stays top-left (outside popup)
+        // Back button
         addTopLeftBackImageButton(to: overlay, name: GameConfig.ButtonNames.menuBack)
 
         // Popup container
@@ -45,7 +45,7 @@ extension GameScene {
         popup.position = CGPoint(x: size.width / 2, y: size.height / 2)
         overlay.addChild(popup)
 
-        // Panel background (simple rounded rect)
+        // Panel background
         let panelW = min(size.width * 0.78, 720)
         let panelH = min(size.height * 0.55, 520)
 
@@ -62,15 +62,7 @@ extension GameScene {
         panel.zPosition = 0
         popup.addChild(panel)
 
-        // Optional soft shadow behind panel
-        let shadow = SKShapeNode(path: panelPath.cgPath)
-        shadow.fillColor = UIColor(white: 0.0, alpha: 0.35)
-        shadow.strokeColor = .clear
-        shadow.position = CGPoint(x: 0, y: -10)
-        shadow.zPosition = -1
-        popup.addChild(shadow)
-
-        // Title inside popup
+        // Title
         let title = SKLabelNode(fontNamed: "NJNaruto-Regular")
         title.text = "Slice Mode"
         title.fontSize = 54
@@ -78,8 +70,18 @@ extension GameScene {
         title.position = CGPoint(x: 0, y: panelH * 0.28)
         title.zPosition = 1
         popup.addChild(title)
+        
+        // Settings Button (Top Right of Panel)
+        let settingsBtn = makeImageButton(
+            imageName: GameConfig.Assets.settingsButton,
+            name: GameConfig.ButtonNames.settings,
+            position: CGPoint(x: panelW/2 - 50, y: panelH/2 - 50),
+            maxWidth: 64
+        )
+        settingsBtn.zPosition = 5
+        popup.addChild(settingsBtn)
 
-        // Buttons inside popup
+        // Main Menu Buttons
         startMenuButtonsContainer?.removeFromParent()
         let buttons = SKNode()
         buttons.zPosition = 2
@@ -102,7 +104,7 @@ extension GameScene {
         )
         buttons.addChild(howBtn)
 
-        // Popup animation (subtle)
+        // Animation
         popup.setScale(0.92)
         popup.alpha = 0
         popup.run(SKAction.group([
@@ -111,6 +113,97 @@ extension GameScene {
         ]))
 
         setMenuButtonsFaded(false)
+    }
+    
+    // MARK: - Settings Overlay
+    func showSettingsOverlay() {
+        settingsOverlay?.removeFromParent()
+        
+        let overlay = SKNode()
+        overlay.zPosition = 2500 // Above everything
+        addChild(overlay)
+        settingsOverlay = overlay
+        
+        // Dim Background
+        let dim = SKSpriteNode(color: UIColor(white: 0, alpha: 0.8), size: size)
+        dim.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        overlay.addChild(dim)
+        
+        // Popup Container
+        let popup = SKNode()
+        popup.name = GameConfig.PopupNames.settingsPopup
+        popup.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        overlay.addChild(popup)
+        
+        // Panel Background
+        let panelW: CGFloat = 600
+        let panelH: CGFloat = 400
+        let bgPath = UIBezierPath(roundedRect: CGRect(x: -panelW/2, y: -panelH/2, width: panelW, height: panelH), cornerRadius: 24)
+        
+        let panel = SKShapeNode(path: bgPath.cgPath)
+        panel.fillColor = UIColor(red: 0.95, green: 0.92, blue: 0.78, alpha: 1.0)
+        panel.strokeColor = UIColor(red: 0.3, green: 0.3, blue: 0.9, alpha: 1.0)
+        panel.lineWidth = 4
+        popup.addChild(panel)
+        
+        // "Settings Header" Image
+        let header = SKSpriteNode(imageNamed: GameConfig.Assets.settingsHeader)
+        header.position = CGPoint(x: 0, y: panelH/2 + 30)
+        let maxHeaderW: CGFloat = 300
+        if header.size.width > maxHeaderW {
+            let scale = maxHeaderW / header.size.width
+            header.setScale(scale)
+        }
+        popup.addChild(header)
+        
+        // Close Button (Exit Button)
+        let closeBtn = makeImageButton(
+            imageName: GameConfig.Assets.closeButton,
+            name: GameConfig.ButtonNames.closeSettings,
+            position: CGPoint(x: panelW/2 + 20, y: panelH/2 + 20),
+            maxWidth: 70
+        )
+        popup.addChild(closeBtn)
+        
+        // --- UPDATED LAYOUT ---
+        
+        // Layout Constants
+        let uniformButtonWidth: CGFloat = 180 // Larger and uniform size
+        let topRowY: CGFloat = 70  // Moved higher up
+        let bottomRowY: CGFloat = -80 // Moved higher up
+        let spacing: CGFloat = 160
+        
+        // Sound (Labels removed)
+        let soundBtn = makeImageButton(
+            imageName: GameConfig.Assets.soundIcon,
+            name: GameConfig.ButtonNames.toggleSound,
+            position: CGPoint(x: -spacing, y: topRowY),
+            maxWidth: uniformButtonWidth
+        )
+        popup.addChild(soundBtn)
+        
+        // Music (Labels removed)
+        let musicBtn = makeImageButton(
+            imageName: GameConfig.Assets.musicIcon,
+            name: GameConfig.ButtonNames.toggleMusic,
+            position: CGPoint(x: spacing, y: topRowY),
+            maxWidth: uniformButtonWidth
+        )
+        popup.addChild(musicBtn)
+        
+        // Dojo (Labels removed, centered below)
+        let dojoBtn = makeImageButton(
+            imageName: GameConfig.Assets.dojoIcon,
+            name: GameConfig.ButtonNames.dojoAction,
+            position: CGPoint(x: 0, y: bottomRowY),
+            maxWidth: uniformButtonWidth
+        )
+        popup.addChild(dojoBtn)
+    }
+    
+    func hideSettingsOverlay() {
+        settingsOverlay?.removeFromParent()
+        settingsOverlay = nil
     }
 
     // MARK: - Tutorial

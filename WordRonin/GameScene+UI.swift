@@ -101,9 +101,7 @@ extension GameScene {
         container.addChild(label)
 
         timerLabel = label
-
-        let dict = NSMutableDictionary()
-        label.userData = dict
+        label.userData = NSMutableDictionary()
 
         positionHUD()
     }
@@ -141,7 +139,7 @@ extension GameScene {
         currentWordLabel?.position = CGPoint(x: size.width / 2, y: size.height - effectiveTopPadding() - 80)
     }
 
-    // MARK: - Button Helpers
+    // MARK: - Button Factories
     func makeBambooButton(title: String, name: String, position: CGPoint, size: CGSize = CGSize(width: 360, height: 92), fontSize: CGFloat = 30) -> SKNode {
         let container = SKNode()
         container.name = name

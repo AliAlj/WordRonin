@@ -13,15 +13,12 @@ extension GameScene {
     func beginGame() {
         startOverlay?.removeFromParent()
         startOverlay = nil
-        hideTutorialOverlay()
+        hideSettingsOverlay()
 
         setInGameBackground()
         showInGameBackButton()
 
-        // Start slice mode music when gameplay starts
         AudioManager.shared.playMusic(fileName: GameConfig.Audio.musicSlice, volume: 0.15)
-
-        // Reset ticking state at game start
         stopClockTick()
 
         gameStarted = true
@@ -205,7 +202,6 @@ extension GameScene {
         timeRemaining = seconds
         updateTimerLabel()
 
-        // Reset ticking each round start
         stopClockTick()
 
         roundTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] t in
