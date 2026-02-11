@@ -92,6 +92,10 @@ final class GameScene: SKScene {
     private let sfxHitFile = "hit_tick.caf"
     private let sfxCorrectFile = "correct.caf"
     private let sfxWrongFile = "wrong.caf"
+    private let sfxClockFile = "clock.caf"
+
+    // Clock ticking state
+    private var isClockTicking = false
 
     private let demoDictionary: Set<String> = [
         // ORANGE
@@ -102,8 +106,8 @@ final class GameScene: SKScene {
 
         // PLANET
         "PLANET",
-        "PLANE","PANEL","PETAL","PLATE","LEAPT","PALET","PENAL",
-        "PLEA","PEAL","PALE","LEAP","PELT","LENT","LATE","LEAN","NEAT","TAPE","PATE","PEAT",
+        "PLANE","PANEL","PETAL","PLATE","LEAPT","PALET","PENAL", "PLANT", "LEANT",
+        "PLEA","PEAL","PALE","LEAP","PELT","LENT","LATE","LEAN","NEAT","TAPE","PATE","PEAT", "TEAL",
         "PAN","PEN","NET","TEN","ANT","TAN","NAP","PAL","LAT","LET","ALE","LEA","APE","EAT","TEA","ATE","TAP","PAT","PET",
 
         // STREAM
@@ -159,6 +163,9 @@ final class GameScene: SKScene {
 
         // Stop any slice music when landing on this scene menu
         AudioManager.shared.stopMusic()
+
+        // Make sure ticking isn't running
+        stopClockTick()
     }
 
     override func didChangeSize(_ oldSize: CGSize) {
@@ -224,6 +231,21 @@ final class GameScene: SKScene {
 
     private func setMenuBackground() { ensureBackground(named: menuBackgroundName) }
     private func setInGameBackground() { ensureBackground(named: inGameBackgroundName) }
+
+    // MARK: Clock Tick (10s left)
+    private func startClockTick() {
+        guard !isClockTicking else { return }
+        isClockTicking = true
+
+        let tick = SKAction.playSoundFileNamed(sfxClockFile, waitForCompletion: true)
+        let loop = SKAction.repeatForever(SKAction.sequence([tick]))
+        run(loop, withKey: "clockTick")
+    }
+
+    private func stopClockTick() {
+        removeAction(forKey: "clockTick")
+        isClockTicking = false
+    }
 
     // MARK: UI Helpers
     private func makeBambooButton(
@@ -456,6 +478,9 @@ final class GameScene: SKScene {
 
         // Stop slice music while in the slice scene menu overlay
         AudioManager.shared.stopMusic()
+
+        // Stop clock ticking (in case you came back mid-tick)
+        stopClockTick()
 
         let overlay = SKNode()
         overlay.zPosition = 999
@@ -751,6 +776,9 @@ final class GameScene: SKScene {
         // Start slice mode music when gameplay starts
         AudioManager.shared.playMusic(fileName: musicSliceFile, volume: 0.15)
 
+        // Reset ticking state at game start
+        stopClockTick()
+
         gameStarted = true
         gameEnded = false
         roundActive = false
@@ -1034,13 +1062,23 @@ final class GameScene: SKScene {
         timeRemaining = seconds
         updateTimerLabel()
 
+        // Reset ticking each round start
+        stopClockTick()
+
         roundTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] t in
             guard let self else { return }
+
             self.timeRemaining -= 1
             self.updateTimerLabel()
+
+            if self.timeRemaining == 10 {
+                self.startClockTick()
+            }
+
             if self.timeRemaining <= 0 {
                 t.invalidate()
                 self.roundTimer = nil
+                self.stopClockTick()
                 self.roundTimeUp()
             }
         }
@@ -1059,6 +1097,8 @@ final class GameScene: SKScene {
 
     private func roundTimeUp() {
         roundActive = false
+
+        stopClockTick()
         run(SKAction.playSoundFileNamed(sfxWrongFile, waitForCompletion: false))
 
         for node in letterNodes { node.run(SKAction.fadeAlpha(to: 0.5, duration: 0.2)) }
@@ -1178,6 +1218,9 @@ final class GameScene: SKScene {
         roundActive = false
         roundTimer?.invalidate()
         roundTimer = nil
+
+        stopClockTick()
+
         physicsWorld.speed = 0
         showGameOverOverlay()
     }
@@ -1267,6 +1310,8 @@ final class GameScene: SKScene {
 
         // Stop slice music when going back to the scene menu overlay
         AudioManager.shared.stopMusic()
+
+        stopClockTick()
 
         gameEnded = false
         gameStarted = false
