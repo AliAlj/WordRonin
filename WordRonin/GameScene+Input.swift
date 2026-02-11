@@ -16,13 +16,35 @@ extension GameScene {
         let location = touch.location(in: self)
         let tappedNodes = nodes(at: location)
 
+        // 1. Tutorial Overlay
         if tutorialOverlay != nil {
             if tapped(tappedNodes, matches: GameConfig.ButtonNames.tutorialBack) {
                 hideTutorialOverlay()
             }
             return
         }
+        
+        // 2. Settings Overlay
+        if settingsOverlay != nil {
+            if tapped(tappedNodes, matches: GameConfig.ButtonNames.closeSettings) {
+                hideSettingsOverlay()
+            }
+            if tapped(tappedNodes, matches: GameConfig.ButtonNames.toggleSound) {
+                isSoundEnabled.toggle()
+                print("Sound toggled: \(isSoundEnabled)")
+            }
+            if tapped(tappedNodes, matches: GameConfig.ButtonNames.toggleMusic) {
+                isMusicEnabled.toggle()
+                print("Music toggled: \(isMusicEnabled)")
+            }
+            if tapped(tappedNodes, matches: GameConfig.ButtonNames.dojoAction) {
+                hideSettingsOverlay()
+                print("Dojo button pressed")
+            }
+            return
+        }
 
+        // 3. Main Menu
         if !gameStarted {
             if tapped(tappedNodes, matches: GameConfig.ButtonNames.menuBack) {
                 AudioManager.shared.stopMusic()
@@ -37,9 +59,14 @@ extension GameScene {
                 beginGame()
                 return
             }
+            if tapped(tappedNodes, matches: GameConfig.ButtonNames.settings) {
+                showSettingsOverlay()
+                return
+            }
             return
         }
 
+        // 4. In-Game
         if tapped(tappedNodes, matches: GameConfig.ButtonNames.inGameBack) {
             restartGame()
             return

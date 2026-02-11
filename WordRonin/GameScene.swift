@@ -1,5 +1,5 @@
 //
-//  GameScene 2.swift
+//  GameScene.swift
 //  slicenspell
 //
 //  Created by Jad Aoun on 2/11/26.
@@ -14,6 +14,7 @@ import UIKit
 final class GameScene: SKScene {
 
     // MARK: - State Properties
+    // NOTE: 'internal' access (no keyword) is required for extensions in other files to see these.
     var score = 0 {
         didSet { gameScore.text = "Score: \(score)" }
     }
@@ -24,6 +25,10 @@ final class GameScene: SKScene {
     var gameStarted = false
     var isClockTicking = false
     var safeInsets: UIEdgeInsets = .zero
+    
+    // Settings State
+    var isSoundEnabled: Bool = true
+    var isMusicEnabled: Bool = true
     
     // MARK: - Game Data
     var baseLetters: [Character] = []
@@ -51,6 +56,7 @@ final class GameScene: SKScene {
     var gameOverOverlay: SKNode?
     var startOverlay: SKNode?
     var tutorialOverlay: SKNode?
+    var settingsOverlay: SKNode?
     
     // MARK: - System
     var roundTimer: Timer?
@@ -85,10 +91,7 @@ final class GameScene: SKScene {
         hideInGameBackButton()
         showStartOverlay()
 
-        // Stop any slice music when landing on this scene menu
         AudioManager.shared.stopMusic()
-
-        // Make sure ticking isn't running
         stopClockTick()
     }
 
@@ -96,20 +99,26 @@ final class GameScene: SKScene {
         super.didChangeSize(oldSize)
         resizeBackground()
 
-        if let startOverlay = startOverlay {
-            startOverlay.removeFromParent()
-            self.startOverlay = nil
+        // Re-layout active overlays if screen size changes
+        if startOverlay != nil {
+            startOverlay?.removeFromParent()
+            startOverlay = nil
             showStartOverlay()
         }
-        if let tutorialOverlay = tutorialOverlay {
-            tutorialOverlay.removeFromParent()
-            self.tutorialOverlay = nil
+        if tutorialOverlay != nil {
+            tutorialOverlay?.removeFromParent()
+            tutorialOverlay = nil
             showTutorialOverlay()
         }
-        if let gameOverOverlay = gameOverOverlay {
-            gameOverOverlay.removeFromParent()
-            self.gameOverOverlay = nil
+        if gameOverOverlay != nil {
+            gameOverOverlay?.removeFromParent()
+            gameOverOverlay = nil
             showGameOverOverlay()
+        }
+        if settingsOverlay != nil {
+            settingsOverlay?.removeFromParent()
+            settingsOverlay = nil
+            showSettingsOverlay()
         }
 
         positionHUD()
