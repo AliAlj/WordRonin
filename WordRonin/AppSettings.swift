@@ -1,3 +1,4 @@
+//AppSettings
 import Foundation
 
 enum AppSettingsKeys {

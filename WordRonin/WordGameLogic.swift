@@ -1,4 +1,4 @@
-//  WordGameLogic.swift
+//WordGameLogic.swift
 import Foundation
 
 struct WordGameLogic {
