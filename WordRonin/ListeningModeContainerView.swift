@@ -1,4 +1,4 @@
-//ListeningModeContainerView
+// ListeningModeContainerView.swift
 import SwiftUI
 
 struct ListeningModeContainerView: View {
@@ -15,20 +15,19 @@ struct ListeningModeContainerView: View {
                 onExit()
             } label: {
                 ZStack {
-                    Image("fullBamboo")
+                    Image("fullbamboo")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 240, height: 90)
-
+                        .scaleEffect(1.5)
+                        .frame(width: 250, height: 180)
                     Text("Back")
-                        .font(.system(size: 22, weight: .bold, design: .rounded))
+                        .font(.system(size: 26, weight: .bold, design: .rounded))
                         .foregroundStyle(.white)
                         .offset(y: -2)
                 }
             }
             .buttonStyle(.plain)
-            .padding(.leading, 16)
-            .padding(.top, 14)
+            .offset(x: 20, y: -40)
             .zIndex(10)
         }
     }
