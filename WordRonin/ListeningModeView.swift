@@ -15,6 +15,9 @@ struct ListeningModeView: View {
     @State private var lastWord: String = ""
     @State private var speech = SpeechCoach()
 
+    /// Only speak the onboarding prompt the first time the user hits Play after entering the screen.
+    @State private var hasSpokenIntroThisSession: Bool = false
+
     var body: some View {
         VStack(spacing: 16) {
 
@@ -61,8 +64,8 @@ struct ListeningModeView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
 
                     TextField("Write your guess…", text: $userGuess)
-                        .textInputAutocapitalization(.characters)
-                        .autocorrectionDisabled(true)
+                        //.textInputAutocapitalization(.characters)
+                        //.autocorrectionDisabled(true)
                         .textFieldStyle(.roundedBorder)
                 }
 
@@ -103,6 +106,9 @@ struct ListeningModeView: View {
         }
         .padding(.bottom, 20)
         .onAppear {
+            // Reset this flag each time the user enters the screen.
+            hasSpokenIntroThisSession = false
+
             if currentWord.isEmpty { newWord() }
         }
         .onDisappear {
@@ -114,9 +120,14 @@ struct ListeningModeView: View {
         speech.stop()
         guard !scrambledLetters.isEmpty else { return }
 
-        speech.speak("Here are the letters.")
-        speech.speak("They are scrambled.")
-        speech.speak("Try to make a word.")
+        // Only speak the intro once per screen entry. If the user taps Play again (replay),
+        // we just repeat the letters.
+        if !hasSpokenIntroThisSession {
+            hasSpokenIntroThisSession = true
+            speech.speak("Here are the letters.")
+            speech.speak("They are scrambled.")
+            speech.speak("Try to make a word.")
+        }
 
         for letter in scrambledLetters {
             speech.speak(String(letter).lowercased())
@@ -198,3 +209,4 @@ final class SpeechCoach {
         synthesizer.stopSpeaking(at: .immediate)
     }
 }
+

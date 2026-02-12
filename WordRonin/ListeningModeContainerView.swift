@@ -15,10 +15,15 @@ struct ListeningModeContainerView: View {
                 onExit()
             } label: {
                 ZStack {
-                    Image("backbutton")
+                    Image("fullBamboo")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 200, height: 70)
+                        .frame(width: 240, height: 90)
+
+                    Text("Back")
+                        .font(.system(size: 22, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
+                        .offset(y: -2)
                 }
             }
             .buttonStyle(.plain)
