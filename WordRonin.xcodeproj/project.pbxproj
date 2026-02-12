@@ -53,9 +53,94 @@
 		D6C1FEAF2F3292280023718F /* WordRoninUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WordRoninUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D6098C982F3BCD19003BC2B9 /* Exceptions for "WordRonin" folder in "slicenspellTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				clock.caf,
+				correct.caf,
+				hit_tick.caf,
+				menusong.caf,
+				njnaruto.otf,
+				slicesong.mp3,
+				wrong.caf,
+			);
+			target = D61FA3022F28894C00D21213 /* slicenspellTests */;
+		};
+		D6098C992F3BCD19003BC2B9 /* Exceptions for "WordRonin" folder in "slicenspellUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				clock.caf,
+				correct.caf,
+				hit_tick.caf,
+				menusong.caf,
+				njnaruto.otf,
+				slicesong.mp3,
+				wrong.caf,
+			);
+			target = D61FA30C2F28894C00D21213 /* slicenspellUITests */;
+		};
+		D6098C9A2F3BCD19003BC2B9 /* Exceptions for "WordRonin" folder in "WordRonin" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AudioManager.swift,
+				clock.caf,
+				correct.caf,
+				hit_tick.caf,
+				Info.plist,
+				menusong.caf,
+				njnaruto.otf,
+				slicesong.mp3,
+				wrong.caf,
+			);
+			target = D6C1FE8E2F3292270023718F /* WordRonin */;
+		};
+		D6098C9B2F3BCD19003BC2B9 /* Exceptions for "WordRonin" folder in "WordRoninTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				clock.caf,
+				correct.caf,
+				hit_tick.caf,
+				menusong.caf,
+				njnaruto.otf,
+				slicesong.mp3,
+				wrong.caf,
+			);
+			target = D6C1FEA42F3292270023718F /* WordRoninTests */;
+		};
+		D6098C9C2F3BCD19003BC2B9 /* Exceptions for "WordRonin" folder in "WordRoninUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				clock.caf,
+				correct.caf,
+				hit_tick.caf,
+				menusong.caf,
+				njnaruto.otf,
+				slicesong.mp3,
+				wrong.caf,
+			);
+			target = D6C1FEAE2F3292280023718F /* WordRoninUITests */;
+		};
+		D6098D332F3D0C14003BC2B9 /* Exceptions for "WordRonin" folder in "slicenspell" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D61FA2E92F28894B00D21213 /* slicenspell */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		D61FA2EC2F28894B00D21213 /* WordRonin */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D6098D332F3D0C14003BC2B9 /* Exceptions for "WordRonin" folder in "slicenspell" target */,
+				D6098C982F3BCD19003BC2B9 /* Exceptions for "WordRonin" folder in "slicenspellTests" target */,
+				D6098C992F3BCD19003BC2B9 /* Exceptions for "WordRonin" folder in "slicenspellUITests" target */,
+				D6098C9A2F3BCD19003BC2B9 /* Exceptions for "WordRonin" folder in "WordRonin" target */,
+				D6098C9B2F3BCD19003BC2B9 /* Exceptions for "WordRonin" folder in "WordRoninTests" target */,
+				D6098C9C2F3BCD19003BC2B9 /* Exceptions for "WordRonin" folder in "WordRoninUITests" target */,
+			);
 			path = WordRonin;
 			sourceTree = "<group>";
 		};
