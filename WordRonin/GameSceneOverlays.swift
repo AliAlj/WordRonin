@@ -1,10 +1,4 @@
-//
 //  GameSceneOverlays.swift
-//  slicenspell
-//
-//  Created by Jad Aoun on 2/11/26.
-//
-
 import SpriteKit
 
 extension GameScene {
@@ -70,16 +64,6 @@ extension GameScene {
         title.position = CGPoint(x: 0, y: panelH * 0.28)
         title.zPosition = 1
         popup.addChild(title)
-        
-        // Settings Button (Top Right of Panel)
-        let settingsBtn = makeImageButton(
-            imageName: GameConfig.Assets.settingsButton,
-            name: GameConfig.ButtonNames.settings,
-            position: CGPoint(x: panelW/2 - 50, y: panelH/2 - 50),
-            maxWidth: 64
-        )
-        settingsBtn.zPosition = 5
-        popup.addChild(settingsBtn)
 
         // Main Menu Buttons
         startMenuButtonsContainer?.removeFromParent()

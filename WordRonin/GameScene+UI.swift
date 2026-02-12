@@ -1,10 +1,4 @@
-//
 //  GameScene+UI.swift
-//  slicenspell
-//
-//  Created by Jad Aoun on 2/11/26.
-//
-
 import SpriteKit
 
 extension GameScene {
@@ -233,3 +227,5 @@ extension GameScene {
         inGameBackButton = nil
     }
 }
+
+

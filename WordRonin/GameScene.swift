@@ -1,11 +1,4 @@
-//
 //  GameScene.swift
-//  slicenspell
-//
-//  Created by Jad Aoun on 2/11/26.
-//
-
-
 import AVFoundation
 import SpriteKit
 import SwiftUI

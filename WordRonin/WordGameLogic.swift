@@ -1,16 +1,10 @@
-//
-//  WordGameLogic.swift
-//  slicenspell
-//
-//  Created by Jad Aoun on 2/11/26.
-//
-
+// WordGameLogic.swift
 import Foundation
 
 struct WordGameLogic {
-    
+
     static let startWords: [String] = ["ORANGE", "PLANET", "STREAM", "CAMERA", "POCKET", "APRICOT"]
-    
+
     static func pointsForWord(length: Int) -> Int {
         let perLetter = 50
         let base = perLetter * length
@@ -47,17 +41,42 @@ struct WordGameLogic {
     }
 
     private static let dictionary: Set<String> = [
-        "ORANGE", "ANGER","ARGON","ORGAN","GROAN","RANGE",
-        "RANG","RAGE","OGRE","ERGO","AERO","AEON","GORE","GEAR","GONE","EARN","NEAR",
-        "ORE","ROE","OAR","AGO","NAG","NOR","EON","EGO","RAN","RAG","AGE","EAR","ERA","ARE","ONE",
-        "PLANET", "PLANE","PANEL","PETAL","PLATE","LEAPT","PALET","PENAL", "PLANT", "LEANT",
-        "PLEA","PEAL","PALE","LEAP","PELT","LENT","LATE","LEAN","NEAT","TAPE","PATE","PEAT", "TEAL",
-        "PAN","PEN","NET","TEN","ANT","TAN","NAP","PAL","LAT","LET","ALE","LEA","APE","EAT","TEA","ATE","TAP","PAT","PET",
-        "STREAM","MASTER","TAMERS","SMEAR","STARE","TEARS","RATES","TAMES","TEAMS","SMART",
-        "SAME","SEAM","TEAM","MATE","MEAT","TAME","EAST","SEAT","RATE","STAR","EARS","TEAR",
-        "ARM","RAM","TAR","RAT","ART","MET","SET","SEA","EAT","ATE","TEA",
-        "CAMERA","CREAM","ACRE","CARE","RACE","MARE","AREA","ARC","CAR","ARM","RAM","ERA","ARE","ACE",
-        "POCKET","POKE","POET","COKE","TOKE","POCK","TOCK","PECK","COPE","COTE","PET","POT","TOP","COP","TOE","ECO",
-        "APRICOT","TOPIC","PATIO","OPTIC","CAPRI","PAIR","TRAP","PORT","PART","TARP","RIP","TIP","PIT","ART","RAT","TAR","TAP","PAT","COP","CAP","CAR","ARC","RAP","PAR","PRO"
+
+        // ORANGE
+        "ORANGE",
+        "ANGER","ARGON","GROAN","ORGAN","RANGE",
+        "EARN","GEAR","GONE","GORE","NEAR","OGRE","ERGO","RAGE","RANG","ROAN",
+        "AGE","AGO","ARE","EAR","ERA","EGO","EON","NAG","NOR","OAR","ONE","ORE","RAG","RAN","ROE",
+
+        // PLANET
+        "PLANET",
+        "LEANT","LEAPT","LENT","PANEL","PATE","PENAL","PETAL","PLANE","PLANT","PLATE","PLEAT","PLAT",
+        "LEAN","LANE","LATE","LEAP","NEAT","PANE","PANT","PALE","PEAL","PEAT","PELT","PLAN","PLEA","TALE","TAPE","TEAL",
+        "ALE","APE","ANT","ATE","EAT","LAP","LAT","LEA","LET","NAP","NET","PAL","PAN","PAT","PEA","PEN","PET","TAN","TAP","TEA","TEN",
+
+        // STREAM
+        "STREAM","MASTER","TAMERS","MATERS",
+        "SMART","SMEAR","STARE","STEAM","TEARS","RATES","TAMES","TEAMS","MARES","MATER","ASTER",
+        "EAST","EARS","EATS","ERAS","MARE","MARS","MEAT","MATE","METS","RATE","REST","SEAM","SEAR","SEAT","SAME","SATE","STAR","STEM","TAME","TARE","TEAM","TEAR","TEAS",
+        "ARM","ARMS","ART","ARE","EAR","ERA","EAT","ATE","TEA","MAR","RAM","RAT","TAR","MET","SET","SEA","SAT",
+
+        // CAMERA
+        "CAMERA",
+        "CREAM",
+        "ACRE","AREA","CARE","RACE","MARE","REAM","CAME","MACE","ACME",
+        "ACE","ARC","ARE","ARM","CAM","CAR","EAR","ERA","MAC","MAR","RAM",
+
+        // POCKET
+        "POCKET",
+        "PECK","COPE","COKE","POET","POKE","TOCK","TOKE","TOPE","KETO","POCK",
+        "COP","COT","ECO","OPT","PET","POT","TOE","TOP",
+
+        // APRICOT
+        "APRICOT",
+        "TROPIC","CAPTOR","ACTOR",
+        "TOPIC","OPTIC","PATIO","RATIO","CAPRI",
+        "COAT","TACO","ORCA","CROP","TRIO",
+        "PAIR","PART","PORT","TARP","TRAP","PACT","CART","PITA","RIOT",
+        "AIR","ARC","ART","CAP","CAR","COP","COT","OAR","OAT","PAR","PAT","PIT","POT","PRO","RAP","RAT","RIP","ROT","TAR","TAP","TIP","TOP"
     ]
 }

@@ -1,8 +1,9 @@
-// ListeningModeView.swift
+//ListeningModeView
 import SwiftUI
 import AVFoundation
 
 struct ListeningModeView: View {
+
     private let wordBank: [String] = [
         "TRUTH", "DAIRY", "ORDER", "TRIP", "PLANE",
         "ORANGE", "PLANET", "STREAM", "CAMERA", "POCKET"
@@ -14,101 +15,82 @@ struct ListeningModeView: View {
     @State private var feedbackText: String = ""
     @State private var lastWord: String = ""
     @State private var speech = SpeechCoach()
-
-    /// Only speak the onboarding prompt the first time the user hits Play after entering the screen.
     @State private var hasSpokenIntroThisSession: Bool = false
 
     var body: some View {
-        VStack(spacing: 16) {
+        ZStack {
 
-            VStack(spacing: 8) {
-                Text("Listening Mode")
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
+            Image("sliceBackground")
+                .resizable()
+                .scaledToFill()
+                .ignoresSafeArea()
 
-                Text("Press Play letters to hear scrambled letters. Then type the word and press Check.")
-                    .font(.system(size: 16, weight: .medium))
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-            }
-            .padding(.top, 12)
+            Color.black.opacity(0.35)
+                .ignoresSafeArea()
 
-            VStack(spacing: 12) {
+            VStack(spacing: 20) {
 
-                HStack(spacing: 12) {
-                    Button {
-                        playScrambledLetters()
-                    } label: {
-                        Label("Play letters", systemImage: "play.circle.fill")
-                            .font(.system(size: 18, weight: .semibold))
-                            .frame(minWidth: 160)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.blue)
-                    .foregroundStyle(.white)
+                VStack(spacing: 6) {
+                    Text("Listening Mode")
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
 
-                    Button {
-                        speech.stop()
-                    } label: {
-                        Label("Stop", systemImage: "stop.circle")
-                            .font(.system(size: 18, weight: .semibold))
-                            .frame(minWidth: 120)
-                    }
-                    .buttonStyle(.bordered)
-                    .tint(.gray)
-                    .foregroundStyle(.black)
-                }
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Type the word you think it is")
-                        .font(.system(size: 16, weight: .semibold))
-                        .frame(maxWidth: .infinity, alignment: .leading)
-
-                    TextField("Write your guess…", text: $userGuess)
-                        //.textInputAutocapitalization(.characters)
-                        //.autocorrectionDisabled(true)
-                        .textFieldStyle(.roundedBorder)
-                }
-
-                HStack(spacing: 12) {
-                    Button {
-                        checkAnswer()
-                    } label: {
-                        Label("Check", systemImage: "checkmark.circle")
-                            .font(.system(size: 18, weight: .semibold))
-                            .frame(minWidth: 140)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.blue)
-                    .foregroundStyle(.white)
-
-                    Button {
-                        newWord()
-                    } label: {
-                        Label("New word", systemImage: "arrow.clockwise")
-                            .font(.system(size: 18, weight: .semibold))
-                            .frame(minWidth: 160)
-                    }
-                    .buttonStyle(.bordered)
-                    .tint(.gray)
-                    .foregroundStyle(.black)
-                }
-
-                if !feedbackText.isEmpty {
-                    Text(feedbackText)
-                        .font(.system(size: 18, weight: .bold))
+                    Text("Press Play letters to hear scrambled letters. Then type the word and press Check.")
+                        .font(.system(size: 16, weight: .medium, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.9))
                         .multilineTextAlignment(.center)
-                        .padding(.top, 4)
+                        .padding(.horizontal, 20)
                 }
+                .padding(.top, 40)
+
+                VStack(spacing: 18) {
+
+                    // PLAY + STOP
+                    HStack(spacing: 30) {
+                        AssetButton(imageName: "playlettersbutton", width: 220) {
+                            playScrambledLetters()
+                        }
+
+                        AssetButton(imageName: "stopbutton", width: 180) {
+                            speech.stop()
+                        }
+                    }
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Type the word you think it is")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(.white)
+
+                        TextField("Write your guess…", text: $userGuess)
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 500)
+                    }
+                    .padding(.horizontal, 40)
+
+                    // CHECK + NEW WORD
+                    HStack(spacing: 30) {
+                        AssetButton(imageName: "checkbutton", width: 200) {
+                            checkAnswer()
+                        }
+
+                        AssetButton(imageName: "newwordbutton", width: 240) {
+                            newWord()
+                        }
+                    }
+
+                    if !feedbackText.isEmpty {
+                        Text(feedbackText)
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundStyle(.white)
+                            .padding(.top, 10)
+                    }
+                }
+
+                Spacer()
             }
-            .padding(.horizontal)
-
-            Spacer(minLength: 0)
         }
-        .padding(.bottom, 20)
         .onAppear {
-            // Reset this flag each time the user enters the screen.
             hasSpokenIntroThisSession = false
-
             if currentWord.isEmpty { newWord() }
         }
         .onDisappear {
@@ -120,8 +102,6 @@ struct ListeningModeView: View {
         speech.stop()
         guard !scrambledLetters.isEmpty else { return }
 
-        // Only speak the intro once per screen entry. If the user taps Play again (replay),
-        // we just repeat the letters.
         if !hasSpokenIntroThisSession {
             hasSpokenIntroThisSession = true
             speech.speak("Here are the letters.")
@@ -148,8 +128,8 @@ struct ListeningModeView: View {
 
         lastWord = next
         currentWord = next
-        scrambledLetters = Array(next)
 
+        scrambledLetters = Array(next)
         if scrambledLetters.count > 1 {
             var attempt = scrambledLetters
             var tries = 0
@@ -188,6 +168,24 @@ struct ListeningModeView: View {
     }
 }
 
+// Generic asset-only button
+private struct AssetButton: View {
+    let imageName: String
+    let width: CGFloat
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(imageName)
+                .resizable()
+                .scaledToFit()
+                .frame(width: width)
+                .shadow(radius: 4)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 final class SpeechCoach {
     private let synthesizer = AVSpeechSynthesizer()
 
@@ -199,9 +197,6 @@ final class SpeechCoach {
         let preferred = Locale.preferredLanguages.first ?? "en-US"
         utterance.voice = AVSpeechSynthesisVoice(language: preferred)
         utterance.rate = AVSpeechUtteranceDefaultSpeechRate
-        utterance.preUtteranceDelay = 0.05
-        utterance.postUtteranceDelay = 0.12
-
         synthesizer.speak(utterance)
     }
 
@@ -209,4 +204,3 @@ final class SpeechCoach {
         synthesizer.stopSpeaking(at: .immediate)
     }
 }
-

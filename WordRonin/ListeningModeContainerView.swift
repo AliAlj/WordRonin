@@ -4,32 +4,53 @@ import SwiftUI
 struct ListeningModeContainerView: View {
     let onExit: () -> Void
 
+    @State private var hasStarted: Bool = false
+    @State private var showHowToPlay: Bool = false
+
     var body: some View {
         ZStack(alignment: .topLeading) {
 
-            ListeningModeView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .zIndex(0)
+            Image("sliceBackground")
+                .resizable()
+                .scaledToFill()
+                .ignoresSafeArea()
 
+            // Main content only after Start is pressed
+            if hasStarted {
+                ListeningModeView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+
+            // Back button
             Button {
                 onExit()
             } label: {
-                ZStack {
-                    Image("fullBamboo")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 240, height: 90)
-
-                    Text("Back")
-                        .font(.system(size: 22, weight: .bold, design: .rounded))
-                        .foregroundStyle(.white)
-                        .offset(y: -2)
-                }
+                Image("backbutton")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 160)
             }
             .buttonStyle(.plain)
-            .padding(.leading, 16)
-            .padding(.top, 14)
-            .zIndex(10)
+            .padding(.leading, 20)
+            .padding(.top, 20)
+            .zIndex(20)
+
+            // Start overlay (like slice mode start popup)
+            if !hasStarted {
+                ListeningStartOverlay(
+                    onStart: { hasStarted = true },
+                    onHowToPlay: { showHowToPlay = true }
+                )
+                .zIndex(10)
+            }
+
+            // How to play overlay
+            if showHowToPlay {
+                ListeningHowToPlayOverlay(
+                    onClose: { showHowToPlay = false }
+                )
+                .zIndex(30)
+            }
         }
     }
 }
