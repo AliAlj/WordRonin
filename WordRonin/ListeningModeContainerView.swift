@@ -1,4 +1,3 @@
-// ListeningModeContainerView.swift
 import SwiftUI
 
 struct ListeningModeContainerView: View {
@@ -7,28 +6,27 @@ struct ListeningModeContainerView: View {
     var body: some View {
         ZStack(alignment: .topLeading) {
 
+            // Same background as Slice Mode
+            Image("sliceBackground")
+                .resizable()
+                .scaledToFill()
+                .ignoresSafeArea()
+
             ListeningModeView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .zIndex(0)
 
+            // Back button using asset
             Button {
                 onExit()
             } label: {
-                ZStack {
-                    Image("fullbamboo")
-                        .resizable()
-                        .scaledToFit()
-                        .scaleEffect(1.5)
-                        .frame(width: 250, height: 180)
-                    Text("Back")
-                        .font(.system(size: 26, weight: .bold, design: .rounded))
-                        .foregroundStyle(.white)
-                        .offset(y: -2)
-                }
+                Image("backbutton")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 160)   // adjust if needed
             }
             .buttonStyle(.plain)
-            .offset(x: 20, y: -40)
-            .zIndex(10)
+            .padding(.leading, 20)
+            .padding(.top, 20)
         }
     }
 }
