@@ -83,10 +83,12 @@
 		D6098C9A2F3BCD19003BC2B9 /* Exceptions for "WordRonin" folder in "WordRonin" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				AppSettings.swift,
 				AudioManager.swift,
 				clock.caf,
 				correct.caf,
 				hit_tick.caf,
+				HomeSettingsView.swift,
 				ListeningModeOverlay.swift,
 				menusong.caf,
 				njnaruto.otf,

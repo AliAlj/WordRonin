@@ -1,8 +1,8 @@
-// RootModeView.swift
 import SwiftUI
 
 struct RootModeView: View {
     @State private var selectedMode: AppMode? = nil
+    @State private var showSettings: Bool = false
 
     var body: some View {
         Group {
@@ -14,10 +14,18 @@ struct RootModeView: View {
                     ListeningModeContainerView(onExit: { selectedMode = nil })
                 }
             } else {
-                ModeSelectView(onSelect: { mode in
-                    AudioManager.shared.stopMusic()   // stop menu music ONLY when entering a mode
-                    selectedMode = mode
-                })
+                ModeSelectView(
+                    onSelect: { mode in
+                        AudioManager.shared.stopMusic()
+                        selectedMode = mode
+                    },
+                    onOpenSettings: {
+                        showSettings = true
+                    }
+                )
+                .sheet(isPresented: $showSettings) {
+                    HomeSettingsView()
+                }
             }
         }
     }
@@ -25,6 +33,9 @@ struct RootModeView: View {
 
 private struct ModeSelectView: View {
     let onSelect: (AppMode) -> Void
+    let onOpenSettings: () -> Void
+
+    @AppStorage(AppSettingsKeys.musicEnabled) private var musicEnabled: Bool = true
 
     var body: some View {
         GeometryReader { geo in
@@ -33,33 +44,58 @@ private struct ModeSelectView: View {
                     .resizable()
                     .scaledToFill()
                     .ignoresSafeArea()
-                  
-                ModeIconButton(imageName: "slicemodebutton", onTap: { onSelect(.slice) })
-                    .position(x: geo.size.width * 0.27, y: geo.size.height * 0.45)
 
-                ModeIconButton(imageName: "listenmodebutton", onTap: { onSelect(.listening) })
-                    .position(x: geo.size.width * 0.8, y: geo.size.height * 0.45)
+                // Home Settings gear (top-right)
+                Button {
+                    onOpenSettings()
+                } label: {
+                    Image("Settings Gear")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 64, height: 64)
+                        .padding(10)
+                        .background(Color.black.opacity(0.25))
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+                .buttonStyle(.plain)
+                .position(x: geo.size.width - 70, y: 70)
+                .zIndex(10)
+
+                // Mode buttons
+                ModeIconButton(imageName: "slicemodebutton", width: 320) {
+                    onSelect(.slice)
+                }
+                .position(x: geo.size.width * 0.28, y: geo.size.height * 0.50)
+
+                ModeIconButton(imageName: "listenmodebutton", width: 320) {
+                    onSelect(.listening)
+                }
+                .position(x: geo.size.width * 0.78, y: geo.size.height * 0.50)
             }
         }
         .onAppear {
-            AudioManager.shared.playMusic(fileName: "menusong.caf", volume: 0.7)
+            if musicEnabled {
+                AudioManager.shared.playMusic(fileName: "menusong.caf", volume: 0.7)
+            } else {
+                AudioManager.shared.stopMusic()
+            }
         }
     }
 }
 
 private struct ModeIconButton: View {
     let imageName: String
+    let width: CGFloat
     let onTap: () -> Void
 
     var body: some View {
-        Button { onTap() } label: {
+        Button(action: onTap) {
             Image(imageName)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 220)
-                .shadow(radius: 6)
-                .frame(width: 220, height: 80)
-                .contentShape(Rectangle())
+                .frame(width: width)
+                .padding(18)                 // bigger hit area
+                .contentShape(Rectangle())   // hit area matches visible space
         }
         .buttonStyle(.plain)
     }
