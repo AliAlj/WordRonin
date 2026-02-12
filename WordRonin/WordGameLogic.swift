@@ -1,10 +1,4 @@
-//
 //  WordGameLogic.swift
-//  slicenspell
-//
-//  Created by Jad Aoun on 2/11/26.
-//
-
 import Foundation
 
 struct WordGameLogic {
