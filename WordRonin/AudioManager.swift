@@ -10,6 +10,11 @@ final class AudioManager {
     private init() {}
 
     func playMusic(fileName: String, volume: Float = 0.7) {
+        if !AppSettingsStore.musicEnabled {
+            stopMusic()
+            return
+        }
+
         if currentMusicFile == fileName, let player = musicPlayer, player.isPlaying {
             return
         }
@@ -36,6 +41,7 @@ final class AudioManager {
             player.volume = volume
             player.prepareToPlay()
             player.play()
+
             musicPlayer = player
         } catch {
             print("AudioManager: failed to play \(fileName). Error: \(error)")

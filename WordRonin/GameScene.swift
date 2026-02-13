@@ -11,50 +11,68 @@ final class GameScene: SKScene {
     var score = 0 {
         didSet { gameScore.text = "Score: \(score)" }
     }
-    
+
     var timeRemaining: Int = 0
     var roundActive: Bool = false
     var gameEnded = false
     var gameStarted = false
     var isClockTicking = false
     var safeInsets: UIEdgeInsets = .zero
-    
-    // Settings State
+
+    // Settings State (mirrors UserDefaults)
     var isSoundEnabled: Bool = true
     var isMusicEnabled: Bool = true
-    
+
     // MARK: - Game Data
     var baseLetters: [Character] = []
     var selectedIndices: [Int] = []
     var possibleWords: Set<String> = []
     var foundWords: Set<String> = []
-    
+
     // MARK: - Nodes & UI References
     var letterNodes: [SKSpriteNode] = []
     var activeSliceBG: SKShapeNode!
     var activeSliceFG: SKShapeNode!
     var activeSlicePoints = [CGPoint]()
-    
+
     var gameScore: SKLabelNode!
     var timerLabel: SKLabelNode?
     var currentWordLabel: SKLabelNode?
-    
+
     var inGameBackButton: SKNode?
     var startMenuButtonsContainer: SKNode?
-    
+
     var scoreHud: SKNode?
     var timerHud: SKNode?
-    
+
     // MARK: - Overlays
     var gameOverOverlay: SKNode?
     var startOverlay: SKNode?
     var tutorialOverlay: SKNode?
     var settingsOverlay: SKNode?
-    
+
     // MARK: - System
     var roundTimer: Timer?
     let backgroundNodeName = "scene_background"
-    
+
+    // MARK: - Settings Sync + Audio Helpers
+    func syncSettingsFromStore() {
+        isSoundEnabled = AppSettingsStore.soundEnabled
+        isMusicEnabled = AppSettingsStore.musicEnabled
+
+        if !isMusicEnabled {
+            AudioManager.shared.stopMusic()
+        }
+        if !isSoundEnabled {
+            stopClockTick()
+        }
+    }
+
+    func playSFX(_ fileName: String, waitForCompletion: Bool = false) {
+        guard isSoundEnabled else { return }
+        run(SKAction.playSoundFileNamed(fileName, waitForCompletion: waitForCompletion))
+    }
+
     // MARK: - Lifecycle
     override func didMove(to view: SKView) {
         if #available(iOS 11.0, *) {
@@ -63,8 +81,9 @@ final class GameScene: SKScene {
             safeInsets = .zero
         }
 
-        ensureBackground(named: GameConfig.Assets.menuBackground)
+        syncSettingsFromStore()
 
+        ensureBackground(named: GameConfig.Assets.menuBackground)
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
         physicsWorld.speed = 0.85
         backgroundColor = .clear
@@ -92,7 +111,6 @@ final class GameScene: SKScene {
         super.didChangeSize(oldSize)
         resizeBackground()
 
-        // Re-layout active overlays if screen size changes
         if startOverlay != nil {
             startOverlay?.removeFromParent()
             startOverlay = nil
@@ -121,7 +139,7 @@ final class GameScene: SKScene {
             showInGameBackButton()
         }
     }
-    
+
     override func update(_ currentTime: TimeInterval) { }
 }
 

@@ -2,9 +2,11 @@
 import SpriteKit
 
 extension GameScene {
-    
+
     // MARK: - Game Start
     func beginGame() {
+        syncSettingsFromStore()
+
         startOverlay?.removeFromParent()
         startOverlay = nil
         hideSettingsOverlay()
@@ -12,7 +14,12 @@ extension GameScene {
         setInGameBackground()
         showInGameBackButton()
 
-        AudioManager.shared.playMusic(fileName: GameConfig.Audio.musicSlice, volume: 0.15)
+        if isMusicEnabled {
+            AudioManager.shared.playMusic(fileName: GameConfig.Audio.musicSlice, volume: 0.15)
+        } else {
+            AudioManager.shared.stopMusic()
+        }
+
         stopClockTick()
 
         gameStarted = true
@@ -56,6 +63,7 @@ extension GameScene {
 
         baseLetters = Array(chosen.uppercased())
         baseLetters.shuffle()
+
         possibleWords = WordGameLogic.generatePossibleWords(from: baseLetters, minLength: 3)
         foundWords.removeAll()
 
@@ -128,6 +136,7 @@ extension GameScene {
             let duration = Double.random(in: 0.45...0.75)
             let rise = SKAction.move(to: target, duration: duration)
             rise.timingMode = .easeOut
+
             letterNode.run(rise) { [weak letterNode] in
                 letterNode?.physicsBody?.isDynamic = false
             }
@@ -172,15 +181,19 @@ extension GameScene {
             let cellH = rect.height / CGFloat(rows)
 
             points.removeAll(keepingCapacity: true)
+
             var idx = 0
             for r in 0..<rows {
                 for c in 0..<cols {
                     if idx >= count { break }
                     idx += 1
+
                     let cx = rect.minX + cellW * (CGFloat(c) + 0.5)
                     let cy = rect.minY + cellH * (CGFloat(r) + 0.5)
+
                     let jitterX = CGFloat.random(in: -cellW * 0.18...cellW * 0.18)
                     let jitterY = CGFloat.random(in: -cellH * 0.18...cellH * 0.18)
+
                     points.append(CGPoint(x: cx + jitterX, y: cy + jitterY))
                 }
             }
@@ -192,10 +205,11 @@ extension GameScene {
 
     // MARK: - Timer
     func startRoundTimer(seconds: Int) {
+        syncSettingsFromStore()
+
         roundTimer?.invalidate()
         timeRemaining = seconds
         updateTimerLabel()
-
         stopClockTick()
 
         roundTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] t in
@@ -227,11 +241,13 @@ extension GameScene {
             shadow.text = timerLabel?.text
         }
     }
-    
-    func startClockTick() {
-        guard !isClockTicking else { return }
-        isClockTicking = true
 
+    func startClockTick() {
+        syncSettingsFromStore()
+        guard isSoundEnabled else { return }
+        guard !isClockTicking else { return }
+
+        isClockTicking = true
         let tick = SKAction.playSoundFileNamed(GameConfig.Audio.clock, waitForCompletion: true)
         let loop = SKAction.repeatForever(SKAction.sequence([tick]))
         run(loop, withKey: "clockTick")
@@ -244,9 +260,9 @@ extension GameScene {
 
     func roundTimeUp() {
         roundActive = false
-
         stopClockTick()
-        run(SKAction.playSoundFileNamed(GameConfig.Audio.wrong, waitForCompletion: false))
+
+        playSFX(GameConfig.Audio.wrong, waitForCompletion: false)
 
         for node in letterNodes { node.run(SKAction.fadeAlpha(to: 0.5, duration: 0.2)) }
         physicsWorld.gravity = CGVector(dx: 0, dy: -6)
@@ -254,7 +270,7 @@ extension GameScene {
 
         endGame()
     }
-    
+
     // MARK: - Validation
     func validate(candidate: String, usedIndices: [Int]) {
         let upper = candidate.uppercased()
@@ -281,7 +297,7 @@ extension GameScene {
     }
 
     func feedbackCorrect(indices: [Int]) {
-        run(SKAction.playSoundFileNamed(GameConfig.Audio.correct, waitForCompletion: false))
+        playSFX(GameConfig.Audio.correct, waitForCompletion: false)
 
         let pulse = SKAction.sequence([
             SKAction.scale(to: 1.35, duration: 0.08),
@@ -302,7 +318,7 @@ extension GameScene {
     }
 
     func feedbackIncorrect(indices: [Int], alreadyFound: Bool = false) {
-        run(SKAction.playSoundFileNamed(GameConfig.Audio.wrong, waitForCompletion: false))
+        playSFX(GameConfig.Audio.wrong, waitForCompletion: false)
 
         let shake = SKAction.sequence([
             .moveBy(x: -6, y: 0, duration: 0.05),

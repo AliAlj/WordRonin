@@ -2,10 +2,13 @@
 import SpriteKit
 
 extension GameScene {
-    
+
     // MARK: - Touches
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
+
+        syncSettingsFromStore()
+
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
         let tappedNodes = nodes(at: location)
@@ -17,24 +20,41 @@ extension GameScene {
             }
             return
         }
-        
+
         // 2. Settings Overlay
         if settingsOverlay != nil {
             if tapped(tappedNodes, matches: GameConfig.ButtonNames.closeSettings) {
                 hideSettingsOverlay()
+                return
             }
+
             if tapped(tappedNodes, matches: GameConfig.ButtonNames.toggleSound) {
-                isSoundEnabled.toggle()
-                print("Sound toggled: \(isSoundEnabled)")
+                AppSettingsStore.soundEnabled.toggle()
+                syncSettingsFromStore()
+                return
             }
+
             if tapped(tappedNodes, matches: GameConfig.ButtonNames.toggleMusic) {
-                isMusicEnabled.toggle()
-                print("Music toggled: \(isMusicEnabled)")
+                AppSettingsStore.musicEnabled.toggle()
+                syncSettingsFromStore()
+
+                if gameStarted && !gameEnded {
+                    if isMusicEnabled {
+                        AudioManager.shared.playMusic(fileName: GameConfig.Audio.musicSlice, volume: 0.15)
+                    } else {
+                        AudioManager.shared.stopMusic()
+                    }
+                } else {
+                    AudioManager.shared.stopMusic()
+                }
+                return
             }
+
             if tapped(tappedNodes, matches: GameConfig.ButtonNames.dojoAction) {
                 hideSettingsOverlay()
-                print("Dojo button pressed")
+                return
             }
+
             return
         }
 
@@ -45,18 +65,22 @@ extension GameScene {
                 NotificationCenter.default.post(name: .exitSliceMode, object: nil)
                 return
             }
+
             if tapped(tappedNodes, matches: GameConfig.ButtonNames.howToPlay) {
                 showTutorialOverlay()
                 return
             }
+
             if tapped(tappedNodes, matches: GameConfig.ButtonNames.start) {
                 beginGame()
                 return
             }
+
             if tapped(tappedNodes, matches: GameConfig.ButtonNames.settings) {
                 showSettingsOverlay()
                 return
             }
+
             return
         }
 
@@ -90,8 +114,7 @@ extension GameScene {
                 selectedIndices.append(index)
                 markLetterSelected(at: index)
                 updateCurrentWordLabel()
-
-                run(SKAction.playSoundFileNamed(GameConfig.Audio.hit, waitForCompletion: false))
+                playSFX(GameConfig.Audio.hit, waitForCompletion: false)
                 break
             }
         }
@@ -99,6 +122,9 @@ extension GameScene {
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if gameEnded || !roundActive { return }
+
+        syncSettingsFromStore()
+
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
 
@@ -117,8 +143,7 @@ extension GameScene {
                     selectedIndices.append(idx)
                     markLetterSelected(at: idx)
                     updateCurrentWordLabel()
-
-                    run(SKAction.playSoundFileNamed(GameConfig.Audio.hit, waitForCompletion: false))
+                    playSFX(GameConfig.Audio.hit, waitForCompletion: false)
                 }
                 break
             }
@@ -137,6 +162,7 @@ extension GameScene {
 
         let candidate = buildSelectedWord()
         let usedIndices = selectedIndices
+
         clearSelectionUIAndState()
         validate(candidate: candidate, usedIndices: usedIndices)
     }
