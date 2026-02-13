@@ -1,8 +1,9 @@
 //  GameSceneOverlays.swift
 import SpriteKit
+import SwiftUI
 
 extension GameScene {
-    
+
     // MARK: - Start Menu
     func setMenuButtonsFaded(_ faded: Bool) {
         guard let container = startMenuButtonsContainer else { return }
@@ -23,23 +24,19 @@ extension GameScene {
         addChild(overlay)
         startOverlay = overlay
 
-        // Dim background
         let dim = SKSpriteNode(color: UIColor(white: 0, alpha: 0.55), size: size)
         dim.position = CGPoint(x: size.width / 2, y: size.height / 2)
         dim.zPosition = 0
         overlay.addChild(dim)
 
-        // Back button
         addTopLeftBackImageButton(to: overlay, name: GameConfig.ButtonNames.menuBack)
 
-        // Popup container
         let popup = SKNode()
         popup.name = GameConfig.PopupNames.startPopup
         popup.zPosition = 10
         popup.position = CGPoint(x: size.width / 2, y: size.height / 2)
         overlay.addChild(popup)
 
-        // Panel background
         let panelW = min(size.width * 0.78, 720)
         let panelH = min(size.height * 0.55, 520)
 
@@ -56,7 +53,6 @@ extension GameScene {
         panel.zPosition = 0
         popup.addChild(panel)
 
-        // Title
         let title = SKLabelNode(fontNamed: "NJNaruto-Regular")
         title.text = "Slice Mode"
         title.fontSize = 54
@@ -65,7 +61,6 @@ extension GameScene {
         title.zPosition = 1
         popup.addChild(title)
 
-        // Main Menu Buttons
         startMenuButtonsContainer?.removeFromParent()
         let buttons = SKNode()
         buttons.zPosition = 2
@@ -88,7 +83,6 @@ extension GameScene {
         )
         buttons.addChild(howBtn)
 
-        // Animation
         popup.setScale(0.92)
         popup.alpha = 0
         popup.run(SKAction.group([
@@ -98,39 +92,38 @@ extension GameScene {
 
         setMenuButtonsFaded(false)
     }
-    
+
     // MARK: - Settings Overlay
     func showSettingsOverlay() {
         settingsOverlay?.removeFromParent()
-        
+
         let overlay = SKNode()
-        overlay.zPosition = 2500 // Above everything
+        overlay.zPosition = 2500
         addChild(overlay)
         settingsOverlay = overlay
-        
-        // Dim Background
+
         let dim = SKSpriteNode(color: UIColor(white: 0, alpha: 0.8), size: size)
         dim.position = CGPoint(x: size.width / 2, y: size.height / 2)
         overlay.addChild(dim)
-        
-        // Popup Container
+
         let popup = SKNode()
         popup.name = GameConfig.PopupNames.settingsPopup
         popup.position = CGPoint(x: size.width / 2, y: size.height / 2)
         overlay.addChild(popup)
-        
-        // Panel Background
+
         let panelW: CGFloat = 600
         let panelH: CGFloat = 400
-        let bgPath = UIBezierPath(roundedRect: CGRect(x: -panelW/2, y: -panelH/2, width: panelW, height: panelH), cornerRadius: 24)
-        
+        let bgPath = UIBezierPath(
+            roundedRect: CGRect(x: -panelW/2, y: -panelH/2, width: panelW, height: panelH),
+            cornerRadius: 24
+        )
+
         let panel = SKShapeNode(path: bgPath.cgPath)
         panel.fillColor = UIColor(red: 0.95, green: 0.92, blue: 0.78, alpha: 1.0)
         panel.strokeColor = UIColor(red: 0.3, green: 0.3, blue: 0.9, alpha: 1.0)
         panel.lineWidth = 4
         popup.addChild(panel)
-        
-        // "Settings Header" Image
+
         let header = SKSpriteNode(imageNamed: GameConfig.Assets.settingsHeader)
         header.position = CGPoint(x: 0, y: panelH/2 + 30)
         let maxHeaderW: CGFloat = 300
@@ -139,8 +132,7 @@ extension GameScene {
             header.setScale(scale)
         }
         popup.addChild(header)
-        
-        // Close Button (Exit Button)
+
         let closeBtn = makeImageButton(
             imageName: GameConfig.Assets.closeButton,
             name: GameConfig.ButtonNames.closeSettings,
@@ -148,16 +140,12 @@ extension GameScene {
             maxWidth: 70
         )
         popup.addChild(closeBtn)
-        
-        // --- UPDATED LAYOUT ---
-        
-        // Layout Constants
-        let uniformButtonWidth: CGFloat = 180 // Larger and uniform size
-        let topRowY: CGFloat = 70  // Moved higher up
-        let bottomRowY: CGFloat = -80 // Moved higher up
+
+        let uniformButtonWidth: CGFloat = 180
+        let topRowY: CGFloat = 70
+        let bottomRowY: CGFloat = -80
         let spacing: CGFloat = 160
-        
-        // Sound (Labels removed)
+
         let soundBtn = makeImageButton(
             imageName: GameConfig.Assets.soundIcon,
             name: GameConfig.ButtonNames.toggleSound,
@@ -165,8 +153,7 @@ extension GameScene {
             maxWidth: uniformButtonWidth
         )
         popup.addChild(soundBtn)
-        
-        // Music (Labels removed)
+
         let musicBtn = makeImageButton(
             imageName: GameConfig.Assets.musicIcon,
             name: GameConfig.ButtonNames.toggleMusic,
@@ -174,8 +161,7 @@ extension GameScene {
             maxWidth: uniformButtonWidth
         )
         popup.addChild(musicBtn)
-        
-        // Dojo (Labels removed, centered below)
+
         let dojoBtn = makeImageButton(
             imageName: GameConfig.Assets.dojoIcon,
             name: GameConfig.ButtonNames.dojoAction,
@@ -184,7 +170,7 @@ extension GameScene {
         )
         popup.addChild(dojoBtn)
     }
-    
+
     func hideSettingsOverlay() {
         settingsOverlay?.removeFromParent()
         settingsOverlay = nil
@@ -193,82 +179,124 @@ extension GameScene {
     // MARK: - Tutorial
     func showTutorialOverlay() {
         tutorialOverlay?.removeFromParent()
-        setMenuButtonsFaded(true)
+
+        // Kill the start overlay completely so nothing leaks through
+        startOverlay?.removeFromParent()
+        startOverlay = nil
 
         let overlay = SKNode()
         overlay.zPosition = 2000
         addChild(overlay)
         tutorialOverlay = overlay
 
-        let dim = SKSpriteNode(color: UIColor(white: 0, alpha: 0.86), size: size)
+        let dim = SKSpriteNode(color: UIColor(white: 0, alpha: 0.78), size: size)
         dim.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        dim.zPosition = 0
         overlay.addChild(dim)
 
         addTopLeftBackImageButton(to: overlay, name: GameConfig.ButtonNames.tutorialBack)
 
-        let title = SKLabelNode(fontNamed: "Chalkduster")
+        let card = SKNode()
+        card.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        card.zPosition = 10
+        overlay.addChild(card)
+
+        let cardW = min(size.width * 0.86, 980)
+        let cardH = min(size.height * 0.74, 760)
+
+        let cardRect = CGRect(x: -cardW / 2, y: -cardH / 2, width: cardW, height: cardH)
+        let cardPath = UIBezierPath(roundedRect: cardRect, cornerRadius: 34)
+
+        let shadow = SKShapeNode(path: cardPath.cgPath)
+        shadow.fillColor = UIColor(white: 0, alpha: 0.55)
+        shadow.strokeColor = .clear
+        shadow.lineWidth = 0
+        shadow.position = CGPoint(x: 0, y: -10)
+        shadow.zPosition = 0
+        card.addChild(shadow)
+
+        let panel = SKShapeNode(path: cardPath.cgPath)
+        panel.fillColor = UIColor(white: 0.08, alpha: 0.92)
+        panel.strokeColor = UIColor(white: 1.0, alpha: 0.18)
+        panel.lineWidth = 2
+        panel.zPosition = 1
+        card.addChild(panel)
+
+        let innerRect = cardRect.insetBy(dx: 10, dy: 10)
+        let innerPath = UIBezierPath(roundedRect: innerRect, cornerRadius: 28)
+        let inner = SKShapeNode(path: innerPath.cgPath)
+        inner.fillColor = .clear
+        inner.strokeColor = UIColor(white: 1.0, alpha: 0.08)
+        inner.lineWidth = 2
+        inner.zPosition = 2
+        card.addChild(inner)
+
+        let title = SKLabelNode(fontNamed: "SF Pro Rounded")
         title.text = "How to Play"
         title.fontSize = 56
         title.fontColor = .white
-        title.position = CGPoint(x: size.width / 2, y: size.height * 0.80)
-        overlay.addChild(title)
+        title.position = CGPoint(x: 0, y: cardH * 0.34)
+        title.zPosition = 5
+        card.addChild(title)
 
-        let subtitle = SKLabelNode(fontNamed: "Chalkduster")
-        subtitle.text = "Swipe across letters to form a word"
+        let subtitle = SKLabelNode(fontNamed: "SF Pro Rounded")
+        subtitle.text = "Swipe across the letters to form a word"
         subtitle.fontSize = 22
         subtitle.fontColor = UIColor(white: 1, alpha: 0.85)
-        subtitle.position = CGPoint(x: size.width / 2, y: size.height * 0.73)
-        overlay.addChild(subtitle)
+        subtitle.position = CGPoint(x: 0, y: cardH * 0.24)
+        subtitle.zPosition = 5
+        card.addChild(subtitle)
 
-        let rules = SKLabelNode(fontNamed: "Chalkduster")
-        rules.text = "Goal: make as many words as you can. Try to solve the full word (use all letters) for the max bonus."
+        let rules = SKLabelNode(fontNamed: "SF Pro Rounded")
+        rules.text = "Make as many words as possible. Use all letters for the full word bonus."
         rules.fontSize = 20
         rules.fontColor = UIColor(white: 1, alpha: 0.92)
         rules.horizontalAlignmentMode = .center
         rules.verticalAlignmentMode = .top
         rules.numberOfLines = 0
-        rules.preferredMaxLayoutWidth = size.width * 0.90
-        rules.position = CGPoint(x: size.width / 2, y: size.height * 0.69)
-        overlay.addChild(rules)
+        rules.preferredMaxLayoutWidth = cardW * 0.86
+        rules.position = CGPoint(x: 0, y: cardH * 0.18)
+        rules.zPosition = 5
+        card.addChild(rules)
 
         let s3 = WordGameLogic.pointsForWord(length: 3)
         let s4 = WordGameLogic.pointsForWord(length: 4)
         let s5 = WordGameLogic.pointsForWord(length: 5)
         let s6 = WordGameLogic.pointsForWord(length: 6)
 
-        let scoring = SKLabelNode(fontNamed: "Chalkduster")
-        scoring.text = "Scoring: 50 per letter + bonus. 3 letters = \(s3), 4 = \(s4), 5 = \(s5), 6+ = \(s6)+"
+        let scoring = SKLabelNode(fontNamed: "SF Pro Rounded")
+        scoring.text = "Scoring: 50 points per letter plus bonus.\n3 letters: \(s3)  •  4 letters: \(s4)  •  5 letters: \(s5)  •  6+ letters: \(s6)+"
         scoring.fontSize = 20
         scoring.fontColor = UIColor(white: 1, alpha: 0.90)
         scoring.horizontalAlignmentMode = .center
         scoring.verticalAlignmentMode = .top
         scoring.numberOfLines = 0
-        scoring.preferredMaxLayoutWidth = size.width * 0.90
-        scoring.position = CGPoint(x: size.width / 2, y: size.height * 0.62)
-        overlay.addChild(scoring)
+        scoring.preferredMaxLayoutWidth = cardW * 0.86
+        scoring.position = CGPoint(x: 0, y: cardH * 0.06)
+        scoring.zPosition = 5
+        card.addChild(scoring)
 
-        let word = Array("ORANGE")
-        let spacing: CGFloat = min(150, size.width / 8.0)
-        let y = size.height * 0.50
-        let startX = size.width * 0.5 - spacing * CGFloat(word.count - 1) * 0.5
+        let word = Array("WORD")
+        let spacing: CGFloat = min(150, cardW / 6.2)
+        let demoY: CGFloat = -cardH * 0.18
+        let startX = -spacing * CGFloat(word.count - 1) * 0.5
 
         var letterPositions: [CGPoint] = []
         for i in 0..<word.count {
-            let x = startX + spacing * CGFloat(i)
-            letterPositions.append(CGPoint(x: x, y: y))
+            letterPositions.append(CGPoint(x: startX + spacing * CGFloat(i), y: demoY))
         }
 
         let bambooNodes: [SKNode] = word.enumerated().map { (i, ch) in
             let container = SKNode()
             container.position = letterPositions[i]
-            container.zPosition = 1
+            container.zPosition = 6
 
             let bamboo = SKSpriteNode(imageNamed: GameConfig.Assets.bambooImage)
             bamboo.size = CGSize(width: 120, height: 120)
-            bamboo.alpha = 0.95
+            bamboo.alpha = 0.98
             container.addChild(bamboo)
 
-            let label = SKLabelNode(fontNamed: "Chalkduster")
+            let label = SKLabelNode(fontNamed: "SF Pro Rounded")
             label.text = String(ch)
             label.fontSize = 54
             label.fontColor = .white
@@ -278,22 +306,22 @@ extension GameScene {
             label.name = "demo_letter_label"
             container.addChild(label)
 
-            overlay.addChild(container)
+            card.addChild(container)
             return container
         }
 
         let line = SKShapeNode()
-        line.zPosition = 2
+        line.zPosition = 7
         line.strokeColor = UIColor(white: 1, alpha: 0.55)
         line.lineWidth = 6
         line.lineCap = .round
-        overlay.addChild(line)
+        card.addChild(line)
 
         let dot = SKShapeNode(circleOfRadius: 10)
-        dot.zPosition = 3
+        dot.zPosition = 8
         dot.fillColor = UIColor(white: 1, alpha: 0.9)
         dot.strokeColor = .clear
-        overlay.addChild(dot)
+        card.addChild(dot)
 
         runTutorialAnimation(line: line, dot: dot, letterNodes: bambooNodes, points: letterPositions)
     }
@@ -302,7 +330,9 @@ extension GameScene {
         tutorialOverlay?.removeAllActions()
         tutorialOverlay?.removeFromParent()
         tutorialOverlay = nil
-        setMenuButtonsFaded(false)
+
+        // Rebuild the menu because we deleted startOverlay when opening tutorial
+        showStartOverlay()
     }
 
     func runTutorialAnimation(line: SKShapeNode, dot: SKShapeNode, letterNodes: [SKNode], points: [CGPoint]) {
@@ -462,14 +492,14 @@ extension GameScene {
         dim.position = CGPoint(x: size.width / 2, y: size.height / 2)
         overlay.addChild(dim)
 
-        let title = SKLabelNode(fontNamed: "Chalkduster")
+        let title = SKLabelNode(fontNamed: "SF Pro Rounded")
         title.text = "Time's Up"
         title.fontSize = 64
         title.fontColor = .white
         title.position = CGPoint(x: size.width / 2, y: size.height * 0.75)
         overlay.addChild(title)
 
-        let scoreLabel = SKLabelNode(fontNamed: "Chalkduster")
+        let scoreLabel = SKLabelNode(fontNamed: "SF Pro Rounded")
         scoreLabel.text = "Score: \(score)"
         scoreLabel.fontSize = 44
         scoreLabel.fontColor = .white
@@ -485,9 +515,9 @@ extension GameScene {
         let foundText = found.joined(separator: ", ")
         let missingText = missing.joined(separator: ", ")
 
-        let foundLabel = SKLabelNode(fontNamed: "Chalkduster")
+        let foundLabel = SKLabelNode(fontNamed: "SF Pro Rounded")
         foundLabel.text = "Found (\(found.count)): \(foundText)"
-        foundLabel.fontSize = 20
+        foundLabel.fontSize = 30
         foundLabel.fontColor = .white
         foundLabel.horizontalAlignmentMode = .center
         foundLabel.verticalAlignmentMode = .top
@@ -496,9 +526,9 @@ extension GameScene {
         foundLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.58)
         overlay.addChild(foundLabel)
 
-        let missingLabel = SKLabelNode(fontNamed: "Chalkduster")
+        let missingLabel = SKLabelNode(fontNamed: "SF Pro Rounded")
         missingLabel.text = "Missing (\(missing.count)): \(missingText)"
-        missingLabel.fontSize = 20
+        missingLabel.fontSize = 30
         missingLabel.fontColor = .white
         missingLabel.horizontalAlignmentMode = .center
         missingLabel.verticalAlignmentMode = .top
@@ -507,12 +537,11 @@ extension GameScene {
         missingLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.42)
         overlay.addChild(missingLabel)
 
-        let playAgainBtn = makeBambooButton(
-            title: "Play Again",
+        let playAgainBtn = makeImageButton(
+            imageName: "playagainbutton",
             name: GameConfig.ButtonNames.playAgain,
             position: CGPoint(x: size.width / 2, y: size.height * 0.20),
-            size: CGSize(width: min(420, size.width * 0.72), height: 200),
-            fontSize: 30
+            maxWidth: min(460, size.width * 0.72)
         )
         overlay.addChild(playAgainBtn)
     }
@@ -565,3 +594,9 @@ extension GameScene {
         showStartOverlay()
     }
 }
+
+#if canImport(SwiftUI)
+#Preview("Tutorial – Landscape", traits: .landscapeLeft) {
+    RootModeView()
+}
+#endif

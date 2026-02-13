@@ -1,4 +1,3 @@
-//RootModeView
 import SwiftUI
 
 struct RootModeView: View {
@@ -40,38 +39,74 @@ private struct ModeSelectView: View {
 
     var body: some View {
         GeometryReader { geo in
-            ZStack {
+            let w = geo.size.width
+            let h = geo.size.height
+
+            let base = min(w, h)
+
+            let isCompact = base < 700
+
+            let buttonWidth = clamp(base * 0.3, min: 240, max: 380)
+            let buttonSpacing = w * 0.3
+
+            let topPad = geo.safeAreaInsets.top + (isCompact ? 10 : 18)
+            let trailingPad = geo.safeAreaInsets.trailing + (isCompact ? 10 : 18)
+
+            ZStack(alignment: .topTrailing) {
+
                 Image("gameBackground")
                     .resizable()
                     .scaledToFill()
                     .ignoresSafeArea()
 
-                // Home Settings gear (top-right)
                 Button {
                     onOpenSettings()
                 } label: {
                     Image("Settings Gear")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 64, height: 64)
-                        .padding(10)
+                        .frame(width: isCompact ? 54 : 64, height: isCompact ? 54 : 64)
+                        .padding(isCompact ? 8 : 10)
                         .background(Color.black.opacity(0.25))
                         .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
                 .buttonStyle(.plain)
-                .position(x: geo.size.width - 70, y: 70)
+                .padding(.top, topPad)
+                .padding(.trailing, trailingPad)
                 .zIndex(10)
+                .accessibilityLabel("Settings")
+                .accessibilityHint("Opens sound and music settings")
+                .accessibilityAddTraits(.isButton)
 
-                // Mode buttons
-                ModeIconButton(imageName: "slicemodebutton", width: 320) {
-                    onSelect(.slice)
-                }
-                .position(x: geo.size.width * 0.28, y: geo.size.height * 0.50)
+                VStack {
+                    Spacer()
 
-                ModeIconButton(imageName: "listenmodebutton", width: 320) {
-                    onSelect(.listening)
+                    HStack(spacing: buttonSpacing) {
+
+                        ModeIconButton(
+                            imageName: "slicemodebutton",
+                            width: buttonWidth,
+                            axLabel: "Slice mode",
+                            axHint: "Starts the slicing word game"
+                        ) {
+                            onSelect(.slice)
+                        }
+
+                        ModeIconButton(
+                            imageName: "listenmodebutton",
+                            width: buttonWidth,
+                            axLabel: "Listening mode",
+                            axHint: "Starts the listening word game"
+                        ) {
+                            onSelect(.listening)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, clamp(w * 0.06, min: 18, max: 80))
+                    .offset(y: -h * 0.04)
+
+                    Spacer()
                 }
-                .position(x: geo.size.width * 0.78, y: geo.size.height * 0.50)
             }
         }
         .onAppear {
@@ -81,12 +116,25 @@ private struct ModeSelectView: View {
                 AudioManager.shared.stopMusic()
             }
         }
+        .onChange(of: musicEnabled) { _, newValue in
+            if newValue {
+                AudioManager.shared.playMusic(fileName: "menusong.caf", volume: 0.7)
+            } else {
+                AudioManager.shared.stopMusic()
+            }
+        }
+    }
+
+    private func clamp(_ value: CGFloat, min: CGFloat, max: CGFloat) -> CGFloat {
+        Swift.max(min, Swift.min(max, value))
     }
 }
 
 private struct ModeIconButton: View {
     let imageName: String
     let width: CGFloat
+    let axLabel: String
+    let axHint: String
     let onTap: () -> Void
 
     var body: some View {
@@ -95,10 +143,13 @@ private struct ModeIconButton: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: width)
-                .padding(18)                 // bigger hit area
-                .contentShape(Rectangle())   // hit area matches visible space
+                .padding(18)
+                .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(axLabel)
+        .accessibilityHint(axHint)
+        .accessibilityAddTraits(.isButton)
     }
 }
 

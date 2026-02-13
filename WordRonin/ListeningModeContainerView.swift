@@ -1,4 +1,4 @@
-//ListeningModeContainerView
+// ListeningModeContainerView.swift
 import SwiftUI
 
 struct ListeningModeContainerView: View {
@@ -9,19 +9,16 @@ struct ListeningModeContainerView: View {
 
     var body: some View {
         ZStack(alignment: .topLeading) {
-
             Image("sliceBackground")
                 .resizable()
                 .scaledToFill()
                 .ignoresSafeArea()
 
-            // Main content only after Start is pressed
             if hasStarted {
                 ListeningModeView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
 
-            // Back button
             Button {
                 onExit()
             } label: {
@@ -34,22 +31,25 @@ struct ListeningModeContainerView: View {
             .padding(.leading, 20)
             .padding(.top, 20)
             .zIndex(20)
+            .accessibilityLabel("Back")
+            .accessibilityHint("Returns to mode selection")
+            .accessibilityAddTraits(.isButton)
 
-            // Start overlay (like slice mode start popup)
             if !hasStarted {
                 ListeningStartOverlay(
                     onStart: { hasStarted = true },
                     onHowToPlay: { showHowToPlay = true }
                 )
                 .zIndex(10)
+                .accessibilityAddTraits(.isModal)
             }
 
-            // How to play overlay
             if showHowToPlay {
                 ListeningHowToPlayOverlay(
                     onClose: { showHowToPlay = false }
                 )
                 .zIndex(30)
+                .accessibilityAddTraits(.isModal)
             }
         }
     }

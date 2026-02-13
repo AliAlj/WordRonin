@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="438px" height="660px" viewBox="0 0 438 660" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Group</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group" transform="translate(-664, -365)" stroke="#979797">
+            <g transform="translate(77.6025, -1)">
+                <g transform="translate(588, 367.1245)">
+                    <path d="M433,657.875471 L96,187.875471 L96,609.58674 C96,636.25587 117.619602,657.875471 144.288732,657.875471 L433,657.875471 L433,657.875471 Z" id="Path-Copy-59" stroke-width="0.77885051" fill="#639641" transform="translate(264.5, 422.8755) scale(-1, 1) translate(-264.5, -422.8755)"></path>
+                    <polygon id="Path-Copy" stroke-width="0.663798151" fill="#000000" transform="translate(218, 328.9377) scale(-1, 1) translate(-218, -328.9377)" points="338.846125 657.875471 0 185.379958 0 -0.00621034225 436 657.875471"></polygon>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

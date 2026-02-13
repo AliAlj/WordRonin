@@ -74,7 +74,7 @@ struct GameConfig {
     }
     
     struct HUD {
-        static let bambooSize = CGSize(width: 300, height: 215)
+        static let bambooSize = CGSize(width: 300, height: 300)
         static let zPosition: CGFloat = 120
         static let textZPosition: CGFloat = 122
     }

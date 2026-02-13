@@ -1,0 +1,58 @@
+{
+  "fill" : {
+    "automatic-gradient" : "srgb:0.95294,0.96863,0.76863,1.00000"
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "image-name" : "Border2.svg",
+          "name" : "Border2",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              293.39750000000004,
+              184.78070334225004
+            ]
+          }
+        },
+        {
+          "image-name" : "W.svg",
+          "name" : "W",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -4.999999998744897e-05,
+              -6.5
+            ]
+          }
+        },
+        {
+          "image-name" : "Border.svg",
+          "name" : "Border",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -295.10249999999996,
+              183.49999300000002
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}

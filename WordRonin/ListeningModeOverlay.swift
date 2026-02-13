@@ -11,7 +11,6 @@ struct ListeningStartOverlay: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 18) {
-
                 Text("Listening Mode")
                     .font(.system(size: 44, weight: .bold, design: .rounded))
                     .foregroundStyle(.white)
@@ -30,6 +29,9 @@ struct ListeningStartOverlay: View {
                             .frame(width: 360)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Start listening mode")
+                    .accessibilityHint("Begins the listening mode round")
+                    .accessibilityAddTraits(.isButton)
 
                     Button { onHowToPlay() } label: {
                         Image("howtoplaybutton")
@@ -38,6 +40,9 @@ struct ListeningStartOverlay: View {
                             .frame(width: 300)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("How to play")
+                    .accessibilityHint("Shows instructions")
+                    .accessibilityAddTraits(.isButton)
                 }
                 .padding(.top, 6)
             }
@@ -51,7 +56,9 @@ struct ListeningStartOverlay: View {
                             .stroke(Color.white.opacity(0.18), lineWidth: 2)
                     )
             )
+            .accessibilityElement(children: .contain)
         }
+        .accessibilityAddTraits(.isModal)
     }
 }
 
@@ -60,14 +67,10 @@ struct ListeningHowToPlayOverlay: View {
 
     var body: some View {
         ZStack(alignment: .topLeading) {
-
-            // Dim background
             Color.black.opacity(0.75)
                 .ignoresSafeArea()
 
-            // Center panel
             VStack(spacing: 14) {
-
                 Text("How to Play")
                     .font(.system(size: 40, weight: .bold, design: .rounded))
                     .foregroundStyle(.white)
@@ -95,8 +98,9 @@ struct ListeningHowToPlayOverlay: View {
                     )
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("How to play. Press Play letters to hear the scrambled letters. Your goal is to guess the entire word.")
 
-            // Top-left Back button (pinned like your SpriteKit overlay)
             Button {
                 onClose()
             } label: {
@@ -108,6 +112,10 @@ struct ListeningHowToPlayOverlay: View {
             .buttonStyle(.plain)
             .padding(.leading, 24)
             .padding(.top, 24)
+            .accessibilityLabel("Back")
+            .accessibilityHint("Closes how to play")
+            .accessibilityAddTraits(.isButton)
         }
+        .accessibilityAddTraits(.isModal)
     }
 }
