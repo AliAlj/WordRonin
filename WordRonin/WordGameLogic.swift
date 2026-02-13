@@ -57,13 +57,13 @@ struct WordGameLogic {
         // STREAM
         "STREAM","MASTER","TAMERS","MATERS",
         "SMART","SMEAR","STARE","STEAM","TEARS","RATES","TAMES","TEAMS","MARES","MATER","ASTER",
-        "EAST","EARS","EATS","ERAS","MARE","MARS","MEAT","MATE","METS","RATE","REST","SEAM","SEAR","SEAT","SAME","SATE","STAR","STEM","TAME","TARE","TEAM","TEAR","TEAS",
-        "ARM","ARMS","ART","ARE","EAR","ERA","EAT","ATE","TEA","MAR","RAM","RAT","TAR","MET","SET","SEA","SAT",
+        "EAST","EARS","EATS","ERAS","MARE","MARS","MEAT","MATE","METS","RATE","REST","SEAM","SEAR","SEAT","SAME","SATE","STAR","STEM","TAME","TARE","TEAM","TEAR","TEAS","ARMS",
+        "ARM","ART","ARE","EAR","ERA","EAT","ATE","TEA","MAR","RAM","RAT","TAR","MET","SET","SEA","SAT",
 
         // CAMERA
         "CAMERA",
-        "CREAM",
-        "ACRE","AREA","CARE","RACE","MARE","REAM","CAME","MACE","ACME",
+        "CREAM","MACER",
+        "ACRE","AREA","CARE","RACE","MARE","REAM","CAME","MACE","ACME","MARE","CRAM","ACER",
         "ACE","ARC","ARE","ARM","CAM","CAR","EAR","ERA","MAC","MAR","RAM",
 
         // POCKET
@@ -75,8 +75,7 @@ struct WordGameLogic {
         "APRICOT",
         "TROPIC","CAPTOR","ACTOR",
         "TOPIC","OPTIC","PATIO","RATIO","CAPRI",
-        "COAT","TACO","ORCA","CROP","TRIO",
-        "PAIR","PART","PORT","TARP","TRAP","PACT","CART","PITA","RIOT",
+        "COAT","TACO","ORCA","CROP","TRIO","PACT","PAIR","PART","PORT","TARP","TRAP","PACT","CART","PITA","RIOT",
         "AIR","ARC","ART","CAP","CAR","COP","COT","OAR","OAT","PAR","PAT","PIT","POT","PRO","RAP","RAT","RIP","ROT","TAR","TAP","TIP","TOP"
     ]
 }
