@@ -63,7 +63,7 @@ struct WordGameLogic {
         // CAMERA
         "CAMERA",
         "CREAM","MACER",
-        "ACRE","AREA","CARE","RACE","MARE","REAM","CAME","MACE","ACME","MARE","CRAM","ACER",
+        "ACRE","AREA","CARE","RACE","REAM","CAME","MACE","ACME","MARE","CRAM","ACER",
         "ACE","ARC","ARE","ARM","CAM","CAR","EAR","ERA","MAC","MAR","RAM",
 
         // POCKET
@@ -75,7 +75,7 @@ struct WordGameLogic {
         "APRICOT",
         "TROPIC","CAPTOR","ACTOR",
         "TOPIC","OPTIC","PATIO","RATIO","CAPRI",
-        "COAT","TACO","ORCA","CROP","TRIO","PACT","PAIR","PART","PORT","TARP","TRAP","PACT","CART","PITA","RIOT",
+        "COAT","TACO","ORCA","CROP","TRIO","PAIR","PART","PORT","TARP","TRAP","PACT","CART","PITA","RIOT",
         "AIR","ARC","ART","CAP","CAR","COP","COT","OAR","OAT","PAR","PAT","PIT","POT","PRO","RAP","RAT","RIP","ROT","TAR","TAP","TIP","TOP"
     ]
 }
