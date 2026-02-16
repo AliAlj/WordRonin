@@ -45,6 +45,10 @@ final class GameScene: SKScene {
     var scoreHud: SKNode?
     var timerHud: SKNode?
 
+    // NEW: Bamboo build bar for the current sliced word
+    var wordBuildBar: SKNode?
+    var lastBuiltCount: Int = 0
+
     // MARK: - Overlays
     var gameOverOverlay: SKNode?
     var startOverlay: SKNode?
@@ -82,23 +86,29 @@ final class GameScene: SKScene {
         }
 
         syncSettingsFromStore()
-
         ensureBackground(named: GameConfig.Assets.menuBackground)
+
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
         physicsWorld.speed = 0.85
+
         backgroundColor = .clear
 
         createScoreHUD()
         createSlices()
+
         createCurrentWordLabel()
+        createWordBuildBar()
+
         createTimerHUD()
 
         gameStarted = false
         roundActive = false
         gameEnded = false
         timeRemaining = 0
+
         updateTimerLabel()
         currentWordLabel?.text = ""
+        updateWordBuildBar(animated: false)
 
         hideInGameBackButton()
         showStartOverlay()
@@ -109,6 +119,7 @@ final class GameScene: SKScene {
 
     override func didChangeSize(_ oldSize: CGSize) {
         super.didChangeSize(oldSize)
+
         resizeBackground()
 
         if startOverlay != nil {
@@ -116,16 +127,19 @@ final class GameScene: SKScene {
             startOverlay = nil
             showStartOverlay()
         }
+
         if tutorialOverlay != nil {
             tutorialOverlay?.removeFromParent()
             tutorialOverlay = nil
             showTutorialOverlay()
         }
+
         if gameOverOverlay != nil {
             gameOverOverlay?.removeFromParent()
             gameOverOverlay = nil
             showGameOverOverlay()
         }
+
         if settingsOverlay != nil {
             settingsOverlay?.removeFromParent()
             settingsOverlay = nil
@@ -134,6 +148,7 @@ final class GameScene: SKScene {
 
         positionHUD()
         positionTopLabels()
+        positionWordBuildBar()
 
         if gameStarted && !gameEnded {
             showInGameBackButton()

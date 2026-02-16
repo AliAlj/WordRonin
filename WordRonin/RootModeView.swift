@@ -1,5 +1,5 @@
-//RootModeView
 import SwiftUI
+import UIKit
 
 struct RootModeView: View {
     @State private var selectedMode: AppMode? = nil
@@ -38,35 +38,60 @@ private struct ModeSelectView: View {
 
     @AppStorage(AppSettingsKeys.musicEnabled) private var musicEnabled: Bool = true
 
+    private struct Layout {
+        static let sliceButtonSize = CGSize(width: 180, height: 360)
+        static let listeningButtonSize = CGSize(width: 180, height: 360)
+
+        static let settingsIconSizeCompact: CGFloat = 54
+        static let settingsIconSizeRegular: CGFloat = 64
+        static let settingsTopPadCompact: CGFloat = 10
+        static let settingsTopPadRegular: CGFloat = 18
+        static let settingsSidePadCompact: CGFloat = 10
+        static let settingsSidePadRegular: CGFloat = 18
+
+        // These are normalized points inside the ORIGINAL image (0...1).
+        // Tweak these two numbers once until the buttons sit perfectly on your doors.
+        static let leftDoorAnchor  = CGPoint(x: 0.262, y: 0.48)
+        static let rightDoorAnchor = CGPoint(x: 0.738, y: 0.48)
+
+        // Small pixel nudges after mapping (optional)
+        static let leftDoorNudge  = CGSize(width: 0, height: 0)
+        static let rightDoorNudge = CGSize(width: 0, height: 0)
+    }
+
     var body: some View {
         GeometryReader { geo in
-            let w = geo.size.width
-            let h = geo.size.height
-
-            let base = min(w, h)
-
+            let screenSize = geo.size
+            let base = min(screenSize.width, screenSize.height)
             let isCompact = base < 700
 
-            let buttonWidth = clamp(base * 0.3, min: 240, max: 380)
-            let buttonSpacing = w * 0.3
+            let topPad = geo.safeAreaInsets.top + (isCompact ? Layout.settingsTopPadCompact : Layout.settingsTopPadRegular)
+            let trailingPad = geo.safeAreaInsets.trailing + (isCompact ? Layout.settingsSidePadCompact : Layout.settingsSidePadRegular)
 
-            let topPad = geo.safeAreaInsets.top + (isCompact ? 10 : 18)
-            let trailingPad = geo.safeAreaInsets.trailing + (isCompact ? 10 : 18)
+            let bgImageSize = UIImage(named: "gameBackground")?.size ?? CGSize(width: 1, height: 1)
+            let bgRect = aspectFillRect(imageSize: bgImageSize, in: screenSize)
+
+            // Convert normalized points (0...1) into actual on-screen positions based on the bgRect
+            let leftPos = point(in: bgRect, normalized: Layout.leftDoorAnchor, nudge: Layout.leftDoorNudge)
+            let rightPos = point(in: bgRect, normalized: Layout.rightDoorAnchor, nudge: Layout.rightDoorNudge)
 
             ZStack(alignment: .topTrailing) {
+                Color.black
+                        .ignoresSafeArea()
 
-                Image("gameBackground")
-                    .resizable()
-                    .scaledToFill()
-                    .ignoresSafeArea()
+                    Image("gameBackground")
+                        .resizable()
+                        .clipped()
+                        .ignoresSafeArea()
 
-                Button {
-                    onOpenSettings()
-                } label: {
+                Button { onOpenSettings() } label: {
                     Image("Settings Gear")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: isCompact ? 54 : 64, height: isCompact ? 54 : 64)
+                        .frame(
+                            width: isCompact ? Layout.settingsIconSizeCompact : Layout.settingsIconSizeRegular,
+                            height: isCompact ? Layout.settingsIconSizeCompact : Layout.settingsIconSizeRegular
+                        )
                         .padding(isCompact ? 8 : 10)
                         .background(Color.black.opacity(0.25))
                         .clipShape(RoundedRectangle(cornerRadius: 14))
@@ -79,35 +104,22 @@ private struct ModeSelectView: View {
                 .accessibilityHint("Opens sound and music settings")
                 .accessibilityAddTraits(.isButton)
 
-                VStack {
-                    Spacer()
+                // Door-anchored buttons (NOT an HStack)
+                ModeIconButton(
+                    imageName: "slicemodebutton",
+                    size: Layout.sliceButtonSize,
+                    axLabel: "Slice mode",
+                    axHint: "Starts the slicing word game"
+                ) { onSelect(.slice) }
+                .position(leftPos)
 
-                    HStack(spacing: buttonSpacing) {
-
-                        ModeIconButton(
-                            imageName: "slicemodebutton",
-                            width: buttonWidth,
-                            axLabel: "Slice mode",
-                            axHint: "Starts the slicing word game"
-                        ) {
-                            onSelect(.slice)
-                        }
-
-                        ModeIconButton(
-                            imageName: "listenmodebutton",
-                            width: buttonWidth,
-                            axLabel: "Listening mode",
-                            axHint: "Starts the listening word game"
-                        ) {
-                            onSelect(.listening)
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal, clamp(w * 0.06, min: 18, max: 80))
-                    .offset(y: -h * 0.04)
-
-                    Spacer()
-                }
+                ModeIconButton(
+                    imageName: "listenmodebutton",
+                    size: Layout.listeningButtonSize,
+                    axLabel: "Listening mode",
+                    axHint: "Starts the listening word game"
+                ) { onSelect(.listening) }
+                .position(rightPos)
             }
         }
         .onAppear {
@@ -126,14 +138,33 @@ private struct ModeSelectView: View {
         }
     }
 
-    private func clamp(_ value: CGFloat, min: CGFloat, max: CGFloat) -> CGFloat {
-        Swift.max(min, Swift.min(max, value))
+    private func aspectFillRect(imageSize: CGSize, in container: CGSize) -> CGRect {
+        let iw = max(1, imageSize.width)
+        let ih = max(1, imageSize.height)
+        let cw = max(1, container.width)
+        let ch = max(1, container.height)
+
+        let scale = max(cw / iw, ch / ih)   // aspectFill
+        let w = iw * scale
+        let h = ih * scale
+
+        let x = (cw - w) * 0.5
+        let y = (ch - h) * 0.5
+
+        return CGRect(x: x, y: y, width: w, height: h)
+    }
+
+    private func point(in rect: CGRect, normalized: CGPoint, nudge: CGSize) -> CGPoint {
+        CGPoint(
+            x: rect.minX + normalized.x * rect.width + nudge.width,
+            y: rect.minY + normalized.y * rect.height + nudge.height
+        )
     }
 }
 
 private struct ModeIconButton: View {
     let imageName: String
-    let width: CGFloat
+    let size: CGSize
     let axLabel: String
     let axHint: String
     let onTap: () -> Void
@@ -143,8 +174,7 @@ private struct ModeIconButton: View {
             Image(imageName)
                 .resizable()
                 .scaledToFit()
-                .frame(width: width)
-                .padding(18)
+                .frame(width: size.width, height: size.height)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

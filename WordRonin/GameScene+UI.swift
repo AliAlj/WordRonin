@@ -2,7 +2,7 @@
 import SpriteKit
 
 extension GameScene {
-    
+
     // MARK: - Layout Tuning
     func effectiveRightPadding() -> CGFloat { max(24, safeInsets.right + 120) }
     func effectiveTopPadding() -> CGFloat { max(32, safeInsets.top + 32) }
@@ -31,6 +31,7 @@ extension GameScene {
     func resizeBackground() {
         guard let bg = childNode(withName: "//\(backgroundNodeName)") as? SKSpriteNode else { return }
         bg.position = CGPoint(x: size.width / 2, y: size.height / 2)
+
         if let tex = bg.texture {
             let xScale = size.width / tex.size().width
             let yScale = size.height / tex.size().height
@@ -46,6 +47,7 @@ extension GameScene {
     // MARK: - HUD
     func createScoreHUD() {
         scoreHud?.removeFromParent()
+
         let container = SKNode()
         container.zPosition = GameConfig.HUD.zPosition
         addChild(container)
@@ -73,6 +75,7 @@ extension GameScene {
 
     func createTimerHUD() {
         timerHud?.removeFromParent()
+
         let container = SKNode()
         container.zPosition = GameConfig.HUD.zPosition
         addChild(container)
@@ -115,7 +118,8 @@ extension GameScene {
             )
         }
     }
-    
+
+    // MARK: - Current Word (keep label for accessibility/debug, but visual is the bamboo bar)
     func createCurrentWordLabel() {
         let label = SKLabelNode(fontNamed: "Chalkduster")
         label.text = ""
@@ -125,12 +129,93 @@ extension GameScene {
         label.verticalAlignmentMode = .center
         label.position = CGPoint(x: size.width / 2, y: size.height - effectiveTopPadding() - 80)
         label.zPosition = 100
+        label.alpha = 0.0
         addChild(label)
         currentWordLabel = label
     }
 
     func positionTopLabels() {
         currentWordLabel?.position = CGPoint(x: size.width / 2, y: size.height - effectiveTopPadding() - 80)
+    }
+
+    // MARK: - NEW: Bamboo Word Build Bar
+    func createWordBuildBar() {
+        wordBuildBar?.removeFromParent()
+
+        let bar = SKNode()
+        bar.name = "wordBuildBar"
+        bar.zPosition = 140
+        addChild(bar)
+        wordBuildBar = bar
+
+        lastBuiltCount = 0
+        positionWordBuildBar()
+    }
+
+    func positionWordBuildBar() {
+        guard let bar = wordBuildBar else { return }
+
+        let topPad = effectiveTopPadding()
+        let y = size.height - topPad - 110
+        bar.position = CGPoint(x: size.width / 2, y: y)
+    }
+
+    func updateWordBuildBar(animated: Bool) {
+        guard let bar = wordBuildBar else { return }
+
+        let word = buildSelectedWord()
+        let letters = Array(word)
+
+        bar.removeAllChildren()
+
+        lastBuiltCount = letters.count
+
+        guard !letters.isEmpty else { return }
+
+        let segmentSide: CGFloat = min(96, max(72, size.width * 0.075))
+        let overlap: CGFloat = segmentSide * 0.38
+
+        let totalWidth = CGFloat(letters.count) * segmentSide - CGFloat(max(0, letters.count - 1)) * overlap
+        let startX = -totalWidth / 2 + segmentSide / 2
+
+        for (i, ch) in letters.enumerated() {
+            let segment = SKNode()
+            segment.zPosition = 0
+
+            let bamboo = SKSpriteNode(imageNamed: GameConfig.Assets.bambooImage)
+            bamboo.size = CGSize(width: segmentSide, height: segmentSide)
+            bamboo.alpha = 0.98
+            bamboo.zPosition = 0
+            segment.addChild(bamboo)
+
+            let label = SKLabelNode(fontNamed: "Chalkduster")
+            label.text = String(ch)
+            label.fontSize = segmentSide * 0.48
+            label.fontColor = .white
+            label.verticalAlignmentMode = .center
+            label.horizontalAlignmentMode = .center
+            label.position = CGPoint(x: -segmentSide * 0.12, y: -segmentSide * 0.04)
+            label.zPosition = 1
+            segment.addChild(label)
+
+            let x = startX + CGFloat(i) * (segmentSide - overlap)
+            segment.position = CGPoint(x: x, y: 0)
+
+            if animated && i == letters.count - 1 {
+                segment.setScale(0.2)
+                segment.alpha = 0.0
+                let pop = SKAction.group([
+                    SKAction.fadeIn(withDuration: 0.06),
+                    SKAction.scale(to: 1.08, duration: 0.08)
+                ])
+                pop.timingMode = .easeOut
+                let settle = SKAction.scale(to: 1.0, duration: 0.06)
+                settle.timingMode = .easeInEaseOut
+                segment.run(SKAction.sequence([pop, settle]))
+            }
+
+            bar.addChild(segment)
+        }
     }
 
     // MARK: - Button Factories
@@ -169,11 +254,12 @@ extension GameScene {
         let sprite = SKSpriteNode(imageNamed: imageName)
         sprite.name = name
         sprite.zPosition = 0
+
         let texSize = sprite.texture?.size() ?? CGSize(width: 1, height: 1)
         let scale = maxWidth / max(1, texSize.width)
         sprite.setScale(scale)
-        container.addChild(sprite)
 
+        container.addChild(sprite)
         return container
     }
 
@@ -185,9 +271,11 @@ extension GameScene {
             position: .zero,
             maxWidth: maxW
         )
+
         let sprite = btn.children.compactMap { $0 as? SKSpriteNode }.first
         let w = sprite?.size.width ?? maxW
         let h = sprite?.size.height ?? (maxW * 0.5)
+
         let left = max(18, safeInsets.left + 18)
         let top = max(18, safeInsets.top + 18)
 
@@ -195,11 +283,13 @@ extension GameScene {
             x: left + w * 0.5,
             y: size.height - top - h * 0.5
         )
+
         parent.addChild(btn)
     }
 
     func showInGameBackButton() {
         inGameBackButton?.removeFromParent()
+
         let maxW = min(220, size.width * 0.12)
         let btn = makeImageButton(
             imageName: GameConfig.Assets.backButton,
@@ -207,9 +297,11 @@ extension GameScene {
             position: .zero,
             maxWidth: maxW
         )
+
         let sprite = btn.children.compactMap { $0 as? SKSpriteNode }.first
         let w = sprite?.size.width ?? maxW
         let h = sprite?.size.height ?? (maxW * 0.5)
+
         let left = max(18, safeInsets.left + 18)
         let top = max(18, safeInsets.top + 18)
 
@@ -217,6 +309,7 @@ extension GameScene {
             x: left + w * 0.5,
             y: size.height - top - h * 0.5
         )
+
         btn.zPosition = 1500
         addChild(btn)
         inGameBackButton = btn
@@ -227,5 +320,3 @@ extension GameScene {
         inGameBackButton = nil
     }
 }
-
-

@@ -6,10 +6,9 @@ extension GameScene {
     // MARK: - Touches
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
-
         syncSettingsFromStore()
-
         guard let touch = touches.first else { return }
+
         let location = touch.location(in: self)
         let tappedNodes = nodes(at: location)
 
@@ -27,13 +26,11 @@ extension GameScene {
                 hideSettingsOverlay()
                 return
             }
-
             if tapped(tappedNodes, matches: GameConfig.ButtonNames.toggleSound) {
                 AppSettingsStore.soundEnabled.toggle()
                 syncSettingsFromStore()
                 return
             }
-
             if tapped(tappedNodes, matches: GameConfig.ButtonNames.toggleMusic) {
                 AppSettingsStore.musicEnabled.toggle()
                 syncSettingsFromStore()
@@ -49,12 +46,10 @@ extension GameScene {
                 }
                 return
             }
-
             if tapped(tappedNodes, matches: GameConfig.ButtonNames.dojoAction) {
                 hideSettingsOverlay()
                 return
             }
-
             return
         }
 
@@ -65,22 +60,18 @@ extension GameScene {
                 NotificationCenter.default.post(name: .exitSliceMode, object: nil)
                 return
             }
-
             if tapped(tappedNodes, matches: GameConfig.ButtonNames.howToPlay) {
                 showTutorialOverlay()
                 return
             }
-
             if tapped(tappedNodes, matches: GameConfig.ButtonNames.start) {
                 beginGame()
                 return
             }
-
             if tapped(tappedNodes, matches: GameConfig.ButtonNames.settings) {
                 showSettingsOverlay()
                 return
             }
-
             return
         }
 
@@ -103,6 +94,7 @@ extension GameScene {
         }
 
         clearSelectionUIAndState()
+
         activeSlicePoints.removeAll(keepingCapacity: true)
 
         for node in tappedNodes {
@@ -114,6 +106,7 @@ extension GameScene {
                 selectedIndices.append(index)
                 markLetterSelected(at: index)
                 updateCurrentWordLabel()
+
                 playSFX(GameConfig.Audio.hit, waitForCompletion: false)
                 break
             }
@@ -122,10 +115,9 @@ extension GameScene {
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if gameEnded || !roundActive { return }
-
         syncSettingsFromStore()
-
         guard let touch = touches.first else { return }
+
         let location = touch.location(in: self)
 
         activeSlicePoints.append(location)
@@ -143,6 +135,7 @@ extension GameScene {
                     selectedIndices.append(idx)
                     markLetterSelected(at: idx)
                     updateCurrentWordLabel()
+
                     playSFX(GameConfig.Audio.hit, waitForCompletion: false)
                 }
                 break
@@ -153,6 +146,7 @@ extension GameScene {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         activeSliceBG.run(SKAction.fadeOut(withDuration: 0.25))
         activeSliceFG.run(SKAction.fadeOut(withDuration: 0.25))
+
         activeSlicePoints.removeAll(keepingCapacity: true)
         activeSliceBG.path = nil
         activeSliceFG.path = nil
@@ -185,10 +179,12 @@ extension GameScene {
     func markLetterSelected(at index: Int) {
         guard index >= 0 && index < letterNodes.count else { return }
         let node = letterNodes[index]
+
         let scaleUp = SKAction.scale(to: 1.2, duration: 0.08)
         let colorize = SKAction.run {
             (node.childNode(withName: "letterLabel") as? SKLabelNode)?.fontColor = .yellow
         }
+
         node.run(scaleUp)
         node.run(colorize)
     }
@@ -196,16 +192,22 @@ extension GameScene {
     func unmarkLetter(at index: Int) {
         guard index >= 0 && index < letterNodes.count else { return }
         let node = letterNodes[index]
+
         let scaleDown = SKAction.scale(to: 1.0, duration: 0.08)
         let colorize = SKAction.run {
             (node.childNode(withName: "letterLabel") as? SKLabelNode)?.fontColor = .white
         }
+
         node.run(scaleDown)
         node.run(colorize)
     }
 
     func updateCurrentWordLabel() {
-        currentWordLabel?.text = buildSelectedWord()
+        let built = buildSelectedWord()
+        currentWordLabel?.text = built
+
+        let shouldAnimate = built.count > lastBuiltCount
+        updateWordBuildBar(animated: shouldAnimate)
     }
 
     func buildSelectedWord() -> String {
@@ -246,6 +248,7 @@ extension GameScene {
 
         let path = UIBezierPath()
         path.move(to: activeSlicePoints[0])
+
         for i in 1 ..< activeSlicePoints.count {
             path.addLine(to: activeSlicePoints[i])
         }
@@ -254,3 +257,4 @@ extension GameScene {
         activeSliceFG.path = path.cgPath
     }
 }
+
