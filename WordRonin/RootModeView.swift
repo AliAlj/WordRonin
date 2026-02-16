@@ -1,3 +1,4 @@
+//RootModeView
 import SwiftUI
 import UIKit
 
@@ -83,6 +84,14 @@ private struct ModeSelectView: View {
                         .resizable()
                         .clipped()
                         .ignoresSafeArea()
+                        .accessibilityHidden(true)
+                
+                Text("Select a mode")
+                    .font(.largeTitle)
+                    .foregroundColor(.clear)
+                    .accessibilityLabel("Select a mode")
+                    .accessibilityAddTraits(.isHeader)
+                    .padding(.top, 1)
 
                 Button { onOpenSettings() } label: {
                     Image("Settings Gear")
@@ -100,6 +109,7 @@ private struct ModeSelectView: View {
                 .padding(.top, topPad)
                 .padding(.trailing, trailingPad)
                 .zIndex(10)
+                .accessibilityElement()
                 .accessibilityLabel("Settings")
                 .accessibilityHint("Opens sound and music settings")
                 .accessibilityAddTraits(.isButton)
