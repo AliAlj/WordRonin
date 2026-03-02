@@ -1,4 +1,4 @@
-//  GameScene.swift
+// GameScene.swift
 import AVFoundation
 import SpriteKit
 import SwiftUI
@@ -6,70 +6,59 @@ import UIKit
 
 final class GameScene: SKScene {
 
-    // MARK: - State Properties
-    // NOTE: 'internal' access (no keyword) is required for extensions in other files to see these.
+    // MARK: - State
     var score = 0 {
         didSet { gameScore.text = "Score: \(score)" }
     }
-
     var timeRemaining: Int = 0
-    var roundActive: Bool = false
-    var gameEnded = false
-    var gameStarted = false
-    var isClockTicking = false
-    var safeInsets: UIEdgeInsets = .zero
+    var roundActive:   Bool = false
+    var gameEnded:     Bool = false
+    var gameStarted:   Bool = false
+    var isClockTicking: Bool = false
+    var safeInsets:    UIEdgeInsets = .zero
 
-    // Settings State (mirrors UserDefaults)
+    // Settings
     var isSoundEnabled: Bool = true
     var isMusicEnabled: Bool = true
 
     // MARK: - Game Data
-    var baseLetters: [Character] = []
-    var selectedIndices: [Int] = []
-    var possibleWords: Set<String> = []
-    var foundWords: Set<String> = []
+    var baseLetters:     [Character] = []
+    var selectedIndices: [Int]       = []
+    var possibleWords:   Set<String> = []
+    var foundWords:      Set<String> = []
 
-    // MARK: - Nodes & UI References
-    var letterNodes: [SKSpriteNode] = []
-    var activeSliceBG: SKShapeNode!
-    var activeSliceFG: SKShapeNode!
+    // MARK: - Nodes
+    var letterNodes:      [SKSpriteNode]  = []
+    var activeSliceBG:    SKShapeNode!
+    var activeSliceFG:    SKShapeNode!
     var activeSlicePoints = [CGPoint]()
-
-    var gameScore: SKLabelNode!
-    var timerLabel: SKLabelNode?
+    var gameScore:        SKLabelNode!
+    var timerLabel:       SKLabelNode?
     var currentWordLabel: SKLabelNode?
-
     var inGameBackButton: SKNode?
     var startMenuButtonsContainer: SKNode?
-
-    var scoreHud: SKNode?
-    var timerHud: SKNode?
-
-    // NEW: Bamboo build bar for the current sliced word
-    var wordBuildBar: SKNode?
-    var lastBuiltCount: Int = 0
+    var scoreHud:         SKNode?
+    var timerHud:         SKNode?
+    var wordBuildBar:     SKNode?
+    var lastBuiltCount:   Int = 0
 
     // MARK: - Overlays
-    var gameOverOverlay: SKNode?
-    var startOverlay: SKNode?
-    var tutorialOverlay: SKNode?
-    var settingsOverlay: SKNode?
+    var gameOverOverlay:  SKNode?
+    var startOverlay:     SKNode?
+    var tutorialOverlay:  SKNode?
+    var settingsOverlay:  SKNode?
 
     // MARK: - System
     var roundTimer: Timer?
     let backgroundNodeName = "scene_background"
 
-    // MARK: - Settings Sync + Audio Helpers
+    // MARK: - Settings Sync
+
     func syncSettingsFromStore() {
         isSoundEnabled = AppSettingsStore.soundEnabled
         isMusicEnabled = AppSettingsStore.musicEnabled
-
-        if !isMusicEnabled {
-            AudioManager.shared.stopMusic()
-        }
-        if !isSoundEnabled {
-            stopClockTick()
-        }
+        if !isMusicEnabled  { AudioManager.shared.stopMusic() }
+        if !isSoundEnabled  { stopClockTick() }
     }
 
     func playSFX(_ fileName: String, waitForCompletion: Bool = false) {
@@ -78,71 +67,56 @@ final class GameScene: SKScene {
     }
 
     // MARK: - Lifecycle
+
     override func didMove(to view: SKView) {
         if #available(iOS 11.0, *) {
             safeInsets = view.safeAreaInsets
-        } else {
-            safeInsets = .zero
         }
-
         syncSettingsFromStore()
         ensureBackground(named: GameConfig.Assets.menuBackground)
 
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
-        physicsWorld.speed = 0.85
-
-        backgroundColor = .clear
+        physicsWorld.speed   = 0.85
+        backgroundColor      = .clear
 
         createScoreHUD()
         createSlices()
-
         createCurrentWordLabel()
         createWordBuildBar()
-
         createTimerHUD()
 
-        gameStarted = false
-        roundActive = false
-        gameEnded = false
+        gameStarted   = false
+        roundActive   = false
+        gameEnded     = false
         timeRemaining = 0
-
         updateTimerLabel()
         currentWordLabel?.text = ""
         updateWordBuildBar(animated: false)
 
         hideInGameBackButton()
         showStartOverlay()
-
         AudioManager.shared.stopMusic()
         stopClockTick()
     }
 
     override func didChangeSize(_ oldSize: CGSize) {
         super.didChangeSize(oldSize)
-
         resizeBackground()
 
         if startOverlay != nil {
-            startOverlay?.removeFromParent()
-            startOverlay = nil
+            startOverlay?.removeFromParent(); startOverlay = nil
             showStartOverlay()
         }
-
         if tutorialOverlay != nil {
-            tutorialOverlay?.removeFromParent()
-            tutorialOverlay = nil
+            tutorialOverlay?.removeFromParent(); tutorialOverlay = nil
             showTutorialOverlay()
         }
-
         if gameOverOverlay != nil {
-            gameOverOverlay?.removeFromParent()
-            gameOverOverlay = nil
+            gameOverOverlay?.removeFromParent(); gameOverOverlay = nil
             showGameOverOverlay()
         }
-
         if settingsOverlay != nil {
-            settingsOverlay?.removeFromParent()
-            settingsOverlay = nil
+            settingsOverlay?.removeFromParent(); settingsOverlay = nil
             showSettingsOverlay()
         }
 
@@ -150,13 +124,13 @@ final class GameScene: SKScene {
         positionTopLabels()
         positionWordBuildBar()
 
-        if gameStarted && !gameEnded {
-            showInGameBackButton()
-        }
+        if gameStarted && !gameEnded { showInGameBackButton() }
     }
 
     override func update(_ currentTime: TimeInterval) { }
 }
+
+// MARK: - Preview
 
 #Preview("GameScene – iPad Landscape", traits: .landscapeLeft) {
     SpriteView(scene: {

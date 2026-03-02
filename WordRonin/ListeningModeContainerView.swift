@@ -1,24 +1,19 @@
 // ListeningModeContainerView.swift
 import SwiftUI
-
 struct ListeningModeContainerView: View {
     let onExit: () -> Void
-
     @State private var hasStarted: Bool = false
     @State private var showHowToPlay: Bool = false
-
     var body: some View {
         ZStack(alignment: .topLeading) {
             Image("sliceBackground")
                 .resizable()
                 .scaledToFill()
                 .ignoresSafeArea()
-
             if hasStarted {
                 ListeningModeView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-
             Button {
                 onExit()
             } label: {
@@ -34,7 +29,6 @@ struct ListeningModeContainerView: View {
             .accessibilityLabel("Back")
             .accessibilityHint("Returns to mode selection")
             .accessibilityAddTraits(.isButton)
-
             if !hasStarted {
                 ListeningStartOverlay(
                     onStart: { hasStarted = true },
@@ -43,7 +37,6 @@ struct ListeningModeContainerView: View {
                 .zIndex(10)
                 .accessibilityAddTraits(.isModal)
             }
-
             if showHowToPlay {
                 ListeningHowToPlayOverlay(
                     onClose: { showHowToPlay = false }
@@ -54,7 +47,6 @@ struct ListeningModeContainerView: View {
         }
     }
 }
-
 #Preview("Listening Mode Container") {
     ListeningModeContainerView(onExit: {})
 }
