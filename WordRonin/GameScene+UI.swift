@@ -125,7 +125,7 @@ extension GameScene {
 
         if let scoreHud {
             // Centre between left-third and right edge (avoids back button)
-            let leftClear = safeInsets.left 
+            let leftClear = safeInsets.left
             let availW    = size.width - leftClear - safeInsets.right
             scoreHud.position = CGPoint(x: leftClear + availW / 2, y: y)
         }

@@ -32,7 +32,6 @@ extension GameScene {
 
         let isPad = Adaptive.isPad
 
-        // Panel — tighter on iPhone so nothing clips
         let panelW = isPad ? min(size.width * 0.80, 720) : min(size.width * 0.82, 420)
         let panelH = isPad ? min(size.height * 0.58, 520) : min(size.height * 0.48, 280)
 
@@ -53,28 +52,23 @@ extension GameScene {
         panel.lineWidth   = 2
         popup.addChild(panel)
 
-        // Title — inside the panel with room above buttons
         let titleFS: CGFloat = isPad ? 54 : 34
         let title = SKLabelNode(fontNamed: "SF Pro Rounded")
         title.text      = "Slice Mode"
         title.fontSize  = titleFS
         title.fontColor = .white
-        // Position title near top of panel with safe margin
         title.position  = CGPoint(x: 0, y: panelH * 0.30)
         title.zPosition = 1
         popup.addChild(title)
 
-        // Buttons container
         let buttons = SKNode()
         buttons.zPosition = 2
         popup.addChild(buttons)
         startMenuButtonsContainer = buttons
 
-        // Button sizes — smaller on iPhone, fit inside the panel
         let startMaxW = isPad ? min(400, panelW * 0.78) : min(panelW * 0.72, 280)
         let howMaxW   = isPad ? min(380, panelW * 0.70) : min(panelW * 0.62, 240)
 
-        // Space buttons evenly inside the panel below the title
         let startY:     CGFloat = isPad ?  20  :  panelH * 0.06
         let secondaryY: CGFloat = isPad ? -(panelH * 0.22) : -(panelH * 0.30)
 
@@ -114,7 +108,6 @@ extension GameScene {
         popup.position = CGPoint(x: size.width / 2, y: size.height / 2)
         overlay.addChild(popup)
 
-        // Adaptive panel size — narrower on iPhone
         let isPad  = Adaptive.isPad
         let panelW: CGFloat = isPad ? 600 : min(size.width * 0.88, 360)
         let panelH: CGFloat = isPad ? 400 : 300
@@ -129,7 +122,6 @@ extension GameScene {
         panel.lineWidth   = 4
         popup.addChild(panel)
 
-        // Header image
         let header = SKSpriteNode(imageNamed: GameConfig.Assets.settingsHeader)
         header.position = CGPoint(x: 0, y: panelH / 2 + (isPad ? 30 : 22))
         let maxHeaderW: CGFloat = isPad ? 300 : 220
@@ -138,14 +130,12 @@ extension GameScene {
         }
         popup.addChild(header)
 
-        // Close button — top-right of panel
         let closeBtn = makeImageButton(imageName: GameConfig.Assets.closeButton,
                                        name: GameConfig.ButtonNames.closeSettings,
                                        position: CGPoint(x: panelW / 2 + 18, y: panelH / 2 + 18),
                                        maxWidth: isPad ? 70 : 54)
         popup.addChild(closeBtn)
 
-        // Icon buttons — scale down on iPhone
         let btnW: CGFloat = isPad ? 180 : 120
         let spacing: CGFloat = isPad ? 160 : 108
         let topRowY: CGFloat = isPad ?  70 : 56
@@ -169,7 +159,6 @@ extension GameScene {
                                       maxWidth: btnW)
         popup.addChild(dojoBtn)
 
-        // Animate in
         popup.setScale(0.88)
         popup.alpha = 0
         popup.run(SKAction.group([.fadeIn(withDuration: 0.14), .scale(to: 1.0, duration: 0.14)]))
@@ -221,7 +210,6 @@ extension GameScene {
         panel.zPosition   = 1
         card.addChild(panel)
 
-        // Title
         let isPad = Adaptive.isPad
         let titleFS: CGFloat = isPad ? 56 : 40
         let bodyFS:  CGFloat = isPad ? 22 : 17
@@ -270,7 +258,6 @@ extension GameScene {
         scoring.zPosition = 5
         card.addChild(scoring)
 
-        // Demo animation
         let word    = Array("WORD")
         let spacing = isPad ? min(150, cardW / 6.2) : min(110, cardW / 6.6)
         let demoY:  CGFloat = -cardH * (isPad ? 0.18 : 0.20)
@@ -456,16 +443,15 @@ extension GameScene {
         dim.position = CGPoint(x: size.width / 2, y: size.height / 2)
         overlay.addChild(dim)
 
-        let isPad  = Adaptive.isPad
-        let cardW  = min(size.width * 0.92, isPad ? 900 : 400)
-        let cardH  = min(size.height * 0.88, isPad ? 680 : size.height * 0.85)
-        let cx     = size.width  / 2
-        let cy     = size.height / 2
+        let isPad = Adaptive.isPad
+        let cardW = min(size.width  * 0.88, isPad ? 860 : 380)
+        let cardH = min(size.height * 0.82, isPad ? 620 : size.height * 0.78)
+        let cx    = size.width  / 2
+        let cy    = size.height * 0.47
 
-        // Card background
         let cardPath = UIBezierPath(
-            roundedRect: CGRect(x: cx - cardW / 2, y: cy - cardH / 2, width: cardW, height: cardH),
-            cornerRadius: 28
+            roundedRect: CGRect(x: cx - cardW/2, y: cy - cardH/2, width: cardW, height: cardH),
+            cornerRadius: 24
         )
         let cardBG = SKShapeNode(path: cardPath.cgPath)
         cardBG.fillColor   = UIColor(white: 0.08, alpha: 0.95)
@@ -474,12 +460,12 @@ extension GameScene {
         cardBG.zPosition   = 1
         overlay.addChild(cardBG)
 
-        // "Time's Up" title
-        let topY = cy + cardH * 0.42
-        let titleFS: CGFloat  = isPad ? 60 : 42
-        let labelFS: CGFloat  = isPad ? 38 : 28
-        let bodyFS:  CGFloat  = isPad ? 26 : 18
+        let titleFS: CGFloat = isPad ? 54 : 26
+        let labelFS: CGFloat = isPad ? 32 : 18
+        let bodyFS:  CGFloat = isPad ? 20 : 11
 
+        // ── Title ──────────────────────────────────────────────────────
+        let topY = cy + cardH * 0.44
         let title = SKLabelNode(fontNamed: "SF Pro Rounded")
         title.text      = "Time's Up!"
         title.fontSize  = titleFS
@@ -492,11 +478,30 @@ extension GameScene {
         scoreLabel.text      = "Score: \(score)"
         scoreLabel.fontSize  = labelFS
         scoreLabel.fontColor = .white
-        scoreLabel.position  = CGPoint(x: cx, y: topY - titleFS - labelFS - 12)
+        scoreLabel.position  = CGPoint(x: cx, y: topY - titleFS - labelFS - 4)
         scoreLabel.zPosition = 5
         overlay.addChild(scoreLabel)
 
-        // Words section — clip to card width
+        // ── Play Again — pinned to bottom of card ──────────────────────
+        let btnW: CGFloat = isPad ? 360 : 180
+        let btnH: CGFloat = isPad ? 72  : 44
+        let btnY = cy - cardH * 0.46 + btnH * 0.5 + (isPad ? 18 : 12)
+
+        let playAgainBtn = makeImageButton(
+            imageName: "playagainbutton",
+            name:      GameConfig.ButtonNames.playAgain,
+            position:  CGPoint(x: cx, y: btnY),
+            maxWidth:  btnW
+        )
+        playAgainBtn.zPosition = 6
+        overlay.addChild(playAgainBtn)
+
+        // ── Word lists — fill space between score and button ──────────
+        let wordLabelW  = cardW * 0.88
+        let wordAreaTop = topY - titleFS - labelFS - 4 - labelFS - 8
+        let wordAreaBot = btnY + btnH * 0.5 + 10
+        let halfH       = (wordAreaTop - wordAreaBot) * 0.38
+
         let missingRaw = Array(possibleWords.subtracting(foundWords))
         let foundRaw   = Array(foundWords)
         let missing    = sortWordsHighToLow(missingRaw)
@@ -505,47 +510,26 @@ extension GameScene {
         let foundText   = found.isEmpty   ? "None" : found.joined(separator: ", ")
         let missingText = missing.isEmpty ? "None" : missing.joined(separator: ", ")
 
-        let wordLabelW = cardW * 0.90
-        let wordY      = topY - titleFS - labelFS - labelFS - 40
-
         let foundLabel = multilineLabel(
             text:      "Found (\(found.count)): \(foundText)",
             fontSize:  bodyFS,
-            color:     UIColor(red: 0.55, green: 1.0, blue: 0.55, alpha: 1.0),
+            color:     UIColor(red: 0.55, green: 1.0, blue: 0.55, alpha: 1),
             maxWidth:  wordLabelW,
-            position:  CGPoint(x: cx, y: wordY),
+            position:  CGPoint(x: cx, y: wordAreaTop),
             zPosition: 5
         )
         overlay.addChild(foundLabel)
 
-        // Measure found label height for spacing
-        let foundH = foundLabel.calculateAccumulatedFrame().height
-        let missingY = wordY - foundH - (isPad ? 20 : 14)
-
         let missingLabel = multilineLabel(
             text:      "Missed (\(missing.count)): \(missingText)",
             fontSize:  bodyFS,
-            color:     UIColor(red: 1.0, green: 0.65, blue: 0.55, alpha: 1.0),
+            color:     UIColor(red: 1.0, green: 0.65, blue: 0.55, alpha: 1),
             maxWidth:  wordLabelW,
-            position:  CGPoint(x: cx, y: missingY),
+            position:  CGPoint(x: cx, y: wordAreaTop - halfH),
             zPosition: 5
         )
         overlay.addChild(missingLabel)
 
-        // Play Again button — pinned near bottom of card
-        let btnW: CGFloat = isPad ? min(460, cardW * 0.65) : min(320, cardW * 0.82)
-        let btnY  = cy - cardH * 0.42 + (isPad ? 52 : 44)
-
-        let playAgainBtn = makeImageButton(
-            imageName: "playagainbutton",
-            name: GameConfig.ButtonNames.playAgain,
-            position: CGPoint(x: cx, y: btnY),
-            maxWidth: btnW
-        )
-        playAgainBtn.zPosition = 6
-        overlay.addChild(playAgainBtn)
-
-        // Animate card
         overlay.setScale(0.92)
         overlay.alpha = 0
         overlay.run(SKAction.group([.fadeIn(withDuration: 0.18), .scale(to: 1.0, duration: 0.18)]))
