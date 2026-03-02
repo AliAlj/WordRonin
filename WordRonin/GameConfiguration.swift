@@ -67,7 +67,7 @@ struct GameConfig {
         static let howToPlay     = "btn_how_to_play"
         static let settings      = "btn_settings"
         // Settings
-        static let closeSettings = "btn_close_settings"
+        static let closeSettings = "btn_close_subwos"
         static let toggleSound   = "btn_toggle_sound"
         static let toggleMusic   = "btn_toggle_music"
         static let dojoAction    = "btn_dojo_action"

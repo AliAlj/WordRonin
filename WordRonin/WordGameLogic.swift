@@ -7,10 +7,8 @@ struct WordGameLogic {
     // Each entry is a root word. Sub-words are stored in the dictionary below.
     static let startWords: [String] = [
         "ORANGE", "PLANET", "STREAM", "CAMERA", "POCKET", "APRICOT",
-        "BRIDGE", "CASTLE", "DANCER", "FLOWER", "GARDEN", "HUNTER",
-        "JUNGLE", "MARKET", "NATURE", "OYSTER", "PIRATE", "QUARTZ",
-        "ROCKET", "SILVER", "TEMPLE", "UNFOLD", "VICTOR", "WINDOW",
-        "FOREST", "ANCHOR", "BANTER", "CARPET", "DONKEY"
+        "CASTLE", "DANCER", "FLOWER", "GARDEN", "HUNTER", "MARKET",
+        "NATURE", "OYSTER", "PIRATE", "ROCKET", "FOREST", "BANTER", "CARPET"
     ]
 
     // MARK: - Scoring
@@ -59,164 +57,112 @@ struct WordGameLogic {
         "ORANGE",
         "ANGER","ARGON","GROAN","ORGAN","RANGE",
         "EARN","GEAR","GONE","GORE","NEAR","OGRE","ERGO","RAGE","RANG","ROAN",
-        "AGE","AGO","ARE","EAR","ERA","EGO","EON","NAG","NOR","OAR","ONE","ORE","RAG","RAN","ROE","GAN","GON","NAE",
+        "AGE","AGO","ARE","EAR","ERA","EGO","EON","NAG","NOR","OAR","ONE","ORE","RAG","RAN","ROE",
 
         // ── PLANET ───────────────────────────────────────────────────────────
         "PLANET",
         "LEANT","PANEL","PATE","PENAL","PETAL","PLANE","PLANT","PLATE","PLEAT","PLAT",
-        "LEAN","LANE","LATE","LEAP","NEAT","PANE","PANT","PALE","PEAL","PEAT","PELT","PLAN","PLEA","TALE","TAPE","TEAL","ALPS","YELP",
-        "ALE","APE","ANT","ATE","EAT","LAP","LAT","LEA","LET","NAP","NET","PAL","PAN","PAT","PEA","PEN","PET","TAN","TAP","TEA","TEN","ELT","LAE","NAE",
+        "LEAN","LANE","LATE","LEAP","NEAT","PANE","PANT","PALE","PEAL","PEAT","PELT","PLAN","PLEA","TALE","TAPE","TEAL",
+        "ALE","APE","ANT","ATE","EAT","LAP","LAT","LEA","LET","NAP","NET","PAL","PAN","PAT","PEA","PEN","PET","TAN","TAP","TEA","TEN",
 
         // ── STREAM ───────────────────────────────────────────────────────────
         "STREAM","MASTER","TAMERS","MATERS",
-        "SMART","SMEAR","STARE","STEAM","TEARS","RATES","TAMES","TEAMS","MARES","MATER","ASTER","TRAMS",
-        "EAST","EARS","EATS","ERAS","MARE","MARS","MEAT","MATE","RATE","REST","SEAM","SEAR","SEAT","SAME","SATE","STAR","STEM","TAME","TARE","TEAM","TEAR","TEAS","ARMS","TRAM","MAST","MART","REAM","MATES",
-        "ARM","ART","ARE","EAR","ERA","EAT","ATE","TEA","MAR","RAM","RAT","TAR","MET","SET","SEA","SAT","TAM","REM",
+        "SMART","SMEAR","STARE","STEAM","TEARS","RATES","TAMES","TEAMS","MARES","MATER","ASTER","TRAMS","MATES",
+        "EAST","EARS","EATS","ERAS","MARE","MARS","MEAT","MATE","RATE","REST","SEAM","SEAR","SEAT","SAME","SATE","STAR","STEM","TAME","TARE","TEAM","TEAR","TEAS","ARMS","TRAM","MAST","MART","REAM",
+        "ARM","ART","ARE","EAR","ERA","EAT","ATE","TEA","MAR","RAM","RAT","TAR","MET","SET","SEA","SAT","TAM",
 
         // ── CAMERA ───────────────────────────────────────────────────────────
         "CAMERA",
-        "CREAM","MACER",
-        "ACRE","AREA","CARE","RACE","REAM","CAME","MACE","ACME","MARE","CRAM","ACER","ARECA",
+        "CREAM","MACER","ARECA",
+        "ACRE","AREA","CARE","RACE","REAM","CAME","MACE","ACME","MARE","CRAM","ACER",
         "ACE","ARC","ARE","ARM","CAM","CAR","EAR","ERA","MAC","MAR","RAM",
 
         // ── POCKET ───────────────────────────────────────────────────────────
         "POCKET",
-        "PECK","COPE","COKE","POET","POKE","TOCK","TOKE","TOPE","KETO","POCK","TOCO",
-        "COP","COT","ECO","OPT","PET","POT","TOE","TOP","KOP",
+        "PECK","COPE","COKE","POET","POKE","TOCK","TOKE","TOPE","KETO","POCK",
+        "COP","COT","ECO","OPT","PET","POT","TOE","TOP",
 
         // ── APRICOT ──────────────────────────────────────────────────────────
         "APRICOT",
         "TROPIC","CAPTOR","ACTOR",
-        "TOPIC","OPTIC","PATIO","RATIO","CAPRI",
+        "TOPIC","OPTIC","PATIO","RATIO",
         "COAT","TACO","ORCA","CROP","TRIO","PAIR","PART","PORT","TARP","TRAP","PACT","CART","PITA","RIOT","ATOP",
         "AIR","ARC","ART","CAP","CAR","COP","COT","OAR","OAT","PAR","PAT","PIT","POT","PRO","RAP","RAT","RIP","ROT","TAR","TAP","TIP","TOP","OCA",
 
-        // ── BRIDGE ───────────────────────────────────────────────────────────
-        "BRIDGE",
-        "BIDE","BIRD","BRED","DIRE","GIRD","GRID","RIDE","RUED",
-        "BID","BIG","DIG","GIB","GIG","RID","RIG","BED","RED","GEL",
-
         // ── CASTLE ───────────────────────────────────────────────────────────
-        "CASTLE","CLEATS","SCLATE",
-        "CASTE","CLEAT","ECLAT","LACES","SCALE","SLATE","STALE","TALES","LEAST","STEAL","TESLA","TACES",
-        "CASE","CAST","CATS","LACE","LACS","LAST","LATE","LEST","SALT","SALE","SEAL","SEAT","SECT","SCAT","TACE","TALE","TALC","TEAL",
-        "ACE","ATE","CAT","EAT","LAC","LAT","LET","SAC","SAT","SEA","SET","TAT","TEA","ELS","ALS",
+        "CASTLE","CLEATS",
+        "CASTE","CLEAT","ECLAT","LACES","SCALE","SLATE","STALE","TALES","LEAST","STEAL","TACES",
+        "CASE","CAST","CATS","LACE","LAST","LATE","LEST","SALT","SALE","SEAL","SEAT","SECT","SCAT","TACE","TALE","TALC","TEAL",
+        "ACE","ATE","CAT","EAT","LAT","LET","SAC","SAT","SEA","SET","TEA",
 
         // ── DANCER ───────────────────────────────────────────────────────────
-        "DANCER","CRANED","RANCED",
+        "DANCER","CRANED",
         "ACNED","CANED","CRANE","DANCE","NACRE",
         "CARD","CARE","DARE","DEAR","DEAN","EARN","NARC","RACE","RAND","READ","REND","CANE","ACNE","ARCED",
-        "ACE","AND","ANE","ARC","CAN","CAR","DAN","DEN","END","ERA","EAR","NAE","RAN","RED","CAD","RAD",
+        "ACE","AND","ANE","ARC","CAN","CAR","DAN","DEN","END","ERA","EAR","RAN","RED","CAD","RAD",
 
         // ── FLOWER ───────────────────────────────────────────────────────────
-        "FLOWER","FOWLER","WOLFER",
-        "FLOE","FLEW","FLOE","FORE","FOWL","LORE","LOWE","ORLE","ROLE","ROLF","WORE","WOLF","OWLE",
-        "ELF","EON","FLO","FOR","FOE","LOW","OWE","OWL","ROE","ROW","WOE","WOK",
+        "FLOWER","FOWLER",
+        "FLOE","FLEW","FORE","FOWL","LORE","LOWE","ORLE","ROLE","WORE","WOLF",
+        "ELF","FOR","FOE","LOW","OWE","OWL","ROE","ROW","WOE",
 
         // ── GARDEN ───────────────────────────────────────────────────────────
-        "GARDEN","RANGED","GRANED",
-        "ANGER","DARER","GARNED","OARED","RANGE","GRAND","GANDER","DANGER",
+        "GARDEN","RANGED","GANDER","DANGER",
+        "ANGER","RANGE","GRAND",
         "AGED","DARE","DEAN","DRAG","EARN","GEAR","GRAD","GRAN","NARD","RAND","RANG","READ","REND",
-        "AGE","AND","ARE","DAN","DEN","EAR","END","ERA","GAD","GAN","NAG","NAE","RAG","RAN","RED",
+        "AGE","AND","ARE","DAN","DEN","EAR","END","ERA","GAD","NAG","RAG","RAN","RED",
 
         // ── HUNTER ───────────────────────────────────────────────────────────
-        "HUNTER","UNTHREW",
-        "RUNE","HUNT","HURT","RUNT","THEN","THUN","TUNE","TURN","TERN","RENT","HERN",
+        "HUNTER",
+        "RUNE","HUNT","HURT","RUNT","TUNE","TURN","TERN","RENT","HERN",
         "HEN","HER","HUE","NUT","RUE","RUN","RUT","TEN","THE","TUN","URN","NET","NTH",
 
-        // ── JUNGLE ───────────────────────────────────────────────────────────
-        "JUNGLE",
-        "LUNG","LUGE","JELL","LUNE","GULL","GULE","LUGE","JELL",
-        "GEL","GEL","GUN","JUG","LUG","NUG","ULE",
-
         // ── MARKET ───────────────────────────────────────────────────────────
-        "MARKET","TAMKER",
-        "MAKER","TAKER","RAKE","MARE","MARK","MART","MEAT","MAKE","MATE","RATE","REAM","TAKE","TAME","TEAM","TERM","TREK","MATER",
-        "ARC","ARE","ARM","ATE","EAR","EAT","ERA","MAR","MAT","MET","RAM","RAT","TAM","TAR","TEA","ERM",
+        "MARKET",
+        "MAKER","TAKER","MATER",
+        "RAKE","MARE","MARK","MART","MEAT","MAKE","MATE","RATE","REAM","TAKE","TAME","TEAM","TERM","TREK",
+        "ARE","ARM","ATE","EAR","EAT","ERA","MAR","MAT","MET","RAM","RAT","TAM","TAR","TEA",
 
         // ── NATURE ───────────────────────────────────────────────────────────
         "NATURE",
         "URATE","UREA","ANTRE",
-        "ANTE","AUNT","EARN","NEAR","RANT","RATE","RUNE","RUNT","RUTA","TARE","TARN","TEAR","TUNE","TURN","TERN","RUNE","TUNA","RANT",
-        "ANT","ARE","ATE","EAR","EAT","ERA","NAE","NUT","RAN","RAT","RUE","RUN","RUT","TAR","TAU","TEA","TEN","TUN","URN","NET",
+        "ANTE","AUNT","EARN","NEAR","RANT","RATE","RUNE","RUNT","TARE","TARN","TEAR","TUNE","TURN","TERN","TUNA",
+        "ANT","ARE","ATE","EAR","EAT","ERA","NUT","RAN","RAT","RUE","RUN","RUT","TAR","TAU","TEA","TEN","TUN","URN","NET",
 
         // ── OYSTER ───────────────────────────────────────────────────────────
-        "OYSTER","STOREY","TOYERS","TYERS",
-        "OYERS","ROSEY","STORY","STORE","TORES","TORSE","TYRES","RESTY",
-        "RYES","ROTE","ROSY","SORT","SORE","TORE","TORY","TOEY","TOYS","TYES","OYES","YORE","RYES","ROTE",
-        "OES","ORE","ORT","ROE","ROT","RYE","SET","SOT","SOY","STY","TOE","TOY","TYE","YES","YET",
+        "OYSTER","STOREY","TOYERS",
+        "STORY","STORE","TORES","TYRES","RESTY","TYERS",
+        "ROTE","ROSY","SORT","SORE","TORE","TORY","TOEY","TOYS","TYES","YORE",
+        "ORE","ORT","ROE","ROT","RYE","SET","SOT","SOY","STY","TOE","TOY","TYE","YES","YET",
 
         // ── PIRATE ───────────────────────────────────────────────────────────
         "PIRATE","PARTIE","TRAIPE",
-        "IRATE","REPAID","TAPIR",
-        "ATRIP","PARER","REDIA","RIPED","TAPER","TIARA","TRIPE",
+        "IRATE","TAPIR","ATRIP","TAPER","TRIPE",
         "PAIR","PARE","PART","PATE","PIER","PITA","RAPT","RATE","REAP","RIPE","TAPE","TARE","TEAR","TIER","TIRE","TRAP","TRIP",
         "AIR","APE","APT","ARE","ART","ATE","EAR","EAT","ERA","PAR","PAT","PEA","PIE","PIT","RAP","RAT","RIP","TAP","TAR","TEA","TIP",
-
-        // ── QUARTZ ───────────────────────────────────────────────────────────
-        "QUARTZ",
-        "TZAR","TSAR","QUAT","RATU",
-        "ART","QUA","RAT","TAR","TAT","TAU",
 
         // ── ROCKET ───────────────────────────────────────────────────────────
         "ROCKET",
         "TROKE","TOKER","OCKER",
-        "COKE","CORE","CORK","ROTE","RECK","ROCK","TOCK","TOKE","TREK","TORE","RECTO",
-        "COR","COT","ECO","ORE","ORT","ROE","ROT","TOE","TOK",
-
-        // ── SILVER ───────────────────────────────────────────────────────────
-        "SILVER","LIVERS","EVILS","RIVEL","VILER","VEILS",
-        "LIVER","LIVES","RIVEL","RIELS","VEILS","VILER","VIELS",
-        "EVIL","ISLE","IRES","LEIS","LIES","LIVE","RIEL","RILE","RISE","VEIL","VIES","VILE",
-        "ELS","ILL","IRE","LEI","LIE","RIE","SIR","VIE",
-
-        // ── TEMPLE ───────────────────────────────────────────────────────────
-        "TEMPLE",
-        "EMMET","MELT","MEET","PEEL","PELE","PELT","PETE","TEEM","TELE",
-        "EEL","ELM","EME","LET","MET","PEE","PET","TEE",
-
-        // ── UNFOLD ───────────────────────────────────────────────────────────
-        "UNFOLD",
-        "FOUND","FOND","FOUL","LOUD","LUND","DOUN","DUNE",
-        "DON","DUO","FLU","FON","FUN","LOD","NUL","OLD","UDO","UNO",
-
-        // ── VICTOR ───────────────────────────────────────────────────────────
-        "VICTOR",
-        "RICOT","TORIC","VIRCO",
-        "COIR","CRIT","RIOT","ROTI","OTIC","VROT",
-        "COR","COT","ORT","ROT","TIC","TOC","VIE",
-
-        // ── WINDOW ───────────────────────────────────────────────────────────
-        "WINDOW",
-        "WINO","WIND","DINO","DOWN","DOIT",
-        "DIN","DON","DOW","ION","NOD","NOW","OWN","WIN","WOD","WON",
+        "COKE","CORE","CORK","ROTE","RECK","ROCK","TOCK","TOKE","TREK","TORE",
+        "COT","ECO","ORE","ORT","ROE","ROT","TOE",
 
         // ── FOREST ───────────────────────────────────────────────────────────
         "FOREST","FORTES","FOSTER","SOFTER",
-        "FORES","FORTE","FRETS","FROST","STORE","TORES","TORSE",
+        "FORES","FORTE","FRETS","FROST","STORE","TORES",
         "FORE","FORT","FROE","FRET","ORES","REST","ROES","ROTE","ROTS","SERF","SORT","SORE","TORE",
-        "FOR","FOE","FRO","OES","ORE","ORT","ROE","ROT","SET","SOT","TOE",
-
-        // ── ANCHOR ───────────────────────────────────────────────────────────
-        "ANCHOR","RANCHO","ARCHON",
-        "NACHO","HORA","HORA","HORN","NARC","ROAN","ARCH","CHAR","CORN",
-        "ARC","CAR","CAN","CON","COR","HON","NOR","OAR","OCA","ORC","RAH","RAN","ROC","HOC",
+        "FOR","FOE","FRO","ORE","ORT","ROE","ROT","SET","SOT","TOE",
 
         // ── BANTER ───────────────────────────────────────────────────────────
-        "BANTER","BANTER",
-        "ANTRE","BRANT","TABEN",
+        "BANTER",
+        "ANTRE","BRANT",
         "ANTE","BARE","BARN","BATE","BEAN","BEAR","BEAT","BRAN","BRAT","EARN","RANT","RATE","TARE","TEAR","TERN","RENT",
-        "ANE","ANT","ATE","BAN","BAR","BAT","BET","EAR","EAT","ERA","NAB","NAE","NET","RAN","RAT","TAB","TAN","TAR","TEA","TEN",
+        "ANE","ANT","ATE","BAN","BAR","BAT","BET","EAR","EAT","ERA","NAB","NET","RAN","RAT","TAB","TAN","TAR","TEA","TEN",
 
         // ── CARPET ───────────────────────────────────────────────────────────
-        "CARPET","TRACER","CARET",
-        "CAPER","CRAPE","RACER","TAPER","TRACE","REACT","CARTE","CRATE","CARET",
-        "ACRE","APER","CARE","CARP","CART","PACE","PARE","PART","PATE","RACE","RAPT","RATE","REAP","RECTO","TACE","TAPE","TARE",
+        "CARPET","CARET",
+        "CAPER","CRAPE","TAPER","TRACE","REACT","CARTE","CRATE",
+        "ACRE","APER","CARE","CARP","CART","PACE","PARE","PART","PATE","RACE","RAPT","RATE","REAP","TACE","TAPE","TARE",
         "ACE","APE","APT","ARC","ARE","ART","ATE","CAP","CAR","CAT","EAR","EAT","ERA","PAR","PAT","PEA","RAP","RAT","TAP","TAR","TEA",
-
-        // ── DONKEY ───────────────────────────────────────────────────────────
-        "DONKEY",
-        "DYKE","DOKE","NODE","DONE","YOKE","YOND","DYNE","DENY","DENO","OKEY",
-        "DEN","DOE","DON","DYE","END","EON","KEY","NOD","ODE","ONE","YON",
     ]
 }
