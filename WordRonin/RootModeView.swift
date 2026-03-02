@@ -198,7 +198,7 @@ private struct ModeSelectView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 100))
                 }
                 .buttonStyle(.plain)
-                .padding(.top, geo.safeAreaInsets.top + 14)
+                .padding(.top, geo.safeAreaInsets.top + 30)
                 .padding(.trailing, geo.safeAreaInsets.trailing + 20)
                 .zIndex(10)
                 .accessibilityLabel("Settings")
